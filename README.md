@@ -21,6 +21,7 @@ book about the year the AI economy died of a quadrillion small errors.
 | [`story/SCENES.md`](story/SCENES.md) | Scene bible: scenes 1–20 specified engine-independently (Chapter Zero + Chapter One) |
 | [`ENGINE.md`](ENGINE.md) | GLITCHKIT: the SCUMM-2026 scene format — levels as JSON, blockout renderer, headless solver |
 | [`story/GLITCHDEX.md`](story/GLITCHDEX.md) | Ranked database of real documented AI failures & grief-tech incidents, mapped to scenes/cases |
+| [`story/MOMENTS.md`](story/MOMENTS.md) | Twists, wow moments, action beats & minigames: best/worst/no-go database + bake-in map |
 
 ## Status
 
