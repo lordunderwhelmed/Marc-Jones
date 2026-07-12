@@ -201,6 +201,43 @@ a tragedy — but *how it lands* varies:
   that loses instruments as the market bleeds, down to a lone "manual" piano
   in the final act. Woodtick logic, macroeconomic scale.
 
+### The Irony Charter (tedium as puzzle-grammar)
+
+The puzzles and riddles are *about* overcoming tedium — and the irony must be
+engineered, not accidental. Rules:
+
+1. **Simulated tedium, real cleverness.** Every tedium-monster (phone funnel,
+   consent banner, unsubscribe labyrinth, two-factor loop) is defeated in
+   5–10 minutes by one clever insight — the fantasy real life never grants:
+   tedium that *yields*. The game depicts tedium; it never inflicts it. If a
+   puzzle's solution is "do the boring thing repeatedly," it's cut.
+2. **The genre is in on the joke.** A point-and-click — the genre famously
+   accused of tedium — about a civilization killed by tedium, starring the
+   professionally patient. The narrator is allowed exactly one wink at this
+   per act, no more.
+3. **Patience is the superpower, not the price.** Mo wins because manual
+   attention is the one resource the automated world optimized away. Puzzles
+   reward *noticing* (the log line nobody read, the timestamp pattern, the
+   one human name in the vendor chain) — never grinding.
+4. **The machines' logic is the crowbar.** Kafka-golf solutions always turn a
+   system's own rules against it: trigger the edge case the funnel can't
+   classify, feed the recommender performative garbage until it begs, answer
+   the chatbot so literally it escalates you to the last human employee.
+   Beating the system must feel like judo, not paperwork.
+5. **Classic gags, transposed.** The rubber-chicken-with-a-pulley absurdism
+   maps to absurd-but-airtight bureaucratic chains: the fax machine is the
+   analog backdoor past the 2FA loop; the hold-music theme is a Woodtick-style
+   leitmotif that the iMUSE engine slowly corrupts the longer the world
+   pretends everything is fine; GRIM-114 cannot pass a CAPTCHA, so the human
+   proves their humanity *on behalf of the robot* — the game's whole thesis
+   in one gag.
+6. **Tedium bosses.** Each act climaxes against an apex tedium-predator: the
+   County Clerk Funnel (act-one boss — the "oracle behind velvet ropes"
+   location pays off here), the Plagiarism False-Positive Tribunal, the
+   Insurance Claim Ouroboros, Frank's own NPS dashboard. Boss = a multi-stage
+   deduction/Kafka-golf set piece with the puzzle-solve haptic chord as the
+   kill screen.
+
 ## 7. Tone management (the hard problem)
 
 The source swings from Jackass jokes to a child shot by a robot. That range
@@ -222,7 +259,60 @@ is the material's power and its risk. Rules:
   "tedium": some things are worth doing manually. (The player has just spent
   a whole game proving it.)
 
-## 8. World bible seeds (expansion inventory)
+## 8. Topicality without expiry (the 2026-reference problem)
+
+We want smart pop-culture references from the mid-2020s, super subtle, inside
+a timeless context. The solution is structural, and the source text already
+contains it:
+
+**The game is set in 2035 looking back — so 2026 is already a period piece
+in-fiction.** Monkey Island treated the golden age of piracy as a
+half-remembered myth to sell anachronistic gags (Stan's used-ship lot, the
+grog machine); we treat the 2020s AI boom exactly the same way. References
+arrive as *archaeology*, not as name-drops — the way we now regard Y2K or
+dot-com sock puppets. That frame makes topical jokes age *into* the game
+instead of out of it: the more dated the artifact, the funnier the museum.
+
+Rules:
+
+1. **Reference the ritual, never the brand.** Timeless = the pattern everyone
+   will still recognize: "prove you're not a robot," "this meeting could have
+   been an email," "have you tried turning it off and on again," the
+   unskippable consent banner, the numbered-model-version worship, the
+   benchmark chart as boardroom altar. 2026-specific artifacts (prompt
+   whispering, engineers who can no longer read the code their tools wrote,
+   the em-dash as a forensic tell of machine writing) appear as period
+   curios that characters in 2035 half-remember and mildly misexplain — the
+   misremembering *is* the joke, and it inoculates the reference against
+   aging badly.
+2. **References live in the examine layer.** The second verb (look at) is the
+   flavor channel: optional, never puzzle-critical. A player in 2040 who
+   misses a reference loses nothing; a player from 2026 gets a private laugh.
+   This is the "super subtle" dial — the spine text stays clean.
+3. **The 2040 test.** Every joke must land for someone who never lived
+   through 2026, via the ritual alone; the topical layer is bonus resonance,
+   never the payload. (Corollary: zero contemporary slang — slang is the
+   fastest-rotting material in comedy.)
+4. **Anchor in myth, like the source already does.** The backdrop instinctively
+   reaches for Moby Dick ("fail whales"), Cassandra (Andrew Johnson), the
+   Sword of Damocles (NPS 70). Keep that register: the satire's load-bearing
+   references are millennia-old, the 2026 ones are set dressing. Sorcerer's
+   apprentice for the vibe-coded codebase nobody can read; Oracle of Delphi
+   for the county clerk's last human phone operator; the Ship of Theseus for
+   a product rewritten by agents until no human line remains.
+5. **One canonized example of each tier** (style guide for writers):
+   - *Ritual (timeless core):* a door that won't open until you reject 47
+     cookie categories individually — the "Reject All" button is, of course,
+     a hotspot that flees the cursor. Solve: judo, not clicking (rule 4 of
+     the Irony Charter).
+   - *Period curio (examine-layer 2026):* a museum plinth in the opt-out
+     bazaar holding "an early autonomous coding agent's final commit,"
+     dated 2026, message: `fix: definitely fixed this time — 47 files
+     changed`. GRIM-114, examining it: "A prayer, in the imperative mood."
+   - *Myth (load-bearing):* the final act's data-center cathedral is
+     explicitly the whale's belly.
+
+## 9. World bible seeds (expansion inventory)
 
 - **Locations**: Frank's tower (helipad→boardroom vertical slice); Giddy HQ
   (a warehouse full of corkboards — a *manual* social network, posts pinned
@@ -245,7 +335,7 @@ is the material's power and its risk. Rules:
   Total Body**, Frank's company deliberately unnamed for one full act (the
   narrator: "it doesn't matter which one; that's the point").
 
-## 9. Open questions for the next brainstorm
+## 10. Open questions for the next brainstorm
 
 1. Is Frank's company *the* platform (a super-app) or one of eight? (The
    backdrop implies interchangeability — that may be the joke to keep.)
