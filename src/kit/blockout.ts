@@ -236,7 +236,8 @@ export async function bootBlockout(scene: Scene) {
   });
   const sub = document.querySelector('#startPage .sub') as HTMLElement;
   if (sub) sub.textContent = `blockout playtest · ${scene.title}`;
-  $('phone').addEventListener('click', (e) => { if (e.target === $('phone')) shell.closeDialog(); });
+  $('phone').addEventListener('click', (e) => { if (e.target === $('phone')) interp.externalClose(); });
+  $('phoneClose').addEventListener('click', () => interp.externalClose());
 
   // debug hook (playwright playthroughs)
   (window as unknown as Record<string, unknown>).__bg = { view: () => ({ camX, viewW }) };

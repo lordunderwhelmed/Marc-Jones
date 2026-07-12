@@ -30,6 +30,8 @@ const BASE = {
   moosh: '#7a7f63', mooshL: '#a3a882', mooshD: '#52563e', mooshPink: '#c98a80',
   // glow plumbing
   glowRGB: '255,177,74',
+  // print-run mode: halftone dots + ink plates (theme d)
+  print: false,
 };
 export const PAL: typeof BASE = { ...BASE };
 
@@ -84,6 +86,30 @@ const THEMES: Record<string, { pal: Partial<typeof BASE>; glow: Partial<typeof G
   },
 };
 
+// D: Print Run — the 2026 retro-futurism: the world as a risograph-printed
+//    book. Halftone dots instead of dither, warm dark paper, vermilion+teal
+//    ink plates with living misregistration. Screens are the ONLY digital
+//    render — everything human is printed, everything machine glows.
+THEMES.d = {
+  pal: {
+    shadow: '#161008', wallFar: '#292118', wallNear: '#352a1c', wallWash: '#4a3826',
+    floorD: '#1c1610', floorLit: '#302818', board: '#241c12',
+    amber: '#ff6a3d', amberDeep: '#b03e1e', amberDim: '#6e2a16',
+    phoneCyan: '#5edcff', phoneCyanDeep: '#2a6a8a',
+    skyHi: '#241c12', skyLo: '#8a4a24', cityInk: '#1a140c', cityLit: '#ff9a4a', citySalmon: '#ff5e3d',
+    metal: '#8a7a62', metalD: '#4a4032', hatch: '#3a3224', hatchD: '#262016',
+    fridge: '#4a6a6e', fridgeL: '#7aa0a4', fridgeD: '#32484a',
+    counter: '#6a5438', counterD: '#3c3020', cabinet: '#2c2418', cabinetD: '#1e180f',
+    wood: '#7a4a2a', woodL: '#9a6238', woodD: '#523018', leg: '#38220f',
+    poster: '#d8c49a', posterInk: '#3a2a18', posterRed: '#e84e2a',
+    pot: '#a04a2a', potD: '#6e3018', leaf: '#3d6a4a', leafL: '#5e9a6a', parsley: '#8ac878',
+    clockFace: '#e0d0a8', clockD: '#8a7a5a',
+    glowRGB: '255,106,61',
+    print: true,
+  },
+  glow: { lamp: 0xff6a3d, lampA: 0.2, phone: 0x5edcff, phoneA: 0.75, neon: 0xff5e3d, neonA: 0.4, rain: 0xd8b890, mote: 0xff8a5e },
+};
+
 export function applyTheme(name: string) {
   const t = THEMES[name] ?? THEMES.a;
   Object.assign(PAL, BASE, t.pal);
@@ -96,6 +122,13 @@ const BAYER = [
   [3, 11, 1, 9],
   [15, 7, 13, 5],
 ];
+// clustered-dot matrix: grows round ink dots from cell centers (riso halftone)
+const HALFTONE = [
+  [13, 7, 8, 14],
+  [6, 1, 2, 9],
+  [5, 0, 3, 10],
+  [12, 4, 11, 15],
+];
 
 function dither(c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number,
   c1: string, c2: string, horizontal = false) {
@@ -103,7 +136,8 @@ function dither(c: CanvasRenderingContext2D, x: number, y: number, w: number, h:
   c.fillStyle = c2;
   for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
     const t = horizontal ? i / w : j / h;
-    if (t * 16 > BAYER[(y + j) & 3][(x + i) & 3] + 0.5) c.fillRect(x + i, y + j, 1, 1);
+    const M = PAL.print ? HALFTONE : BAYER;
+    if (t * 16 > M[(y + j) & 3][(x + i) & 3] + 0.5) c.fillRect(x + i, y + j, 1, 1);
   }
 }
 function speckle(c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, col: string, density: number, seed = 7) {
@@ -423,6 +457,21 @@ export function drawZosia(): HTMLCanvasElement[] {
     frames.push(cv);
   }
   return frames;
+}
+
+// paper grain overlay (print-run theme)
+export function drawGrain(w: number, h: number): HTMLCanvasElement {
+  const [cv, c] = canvas(w, h);
+  speckle(c, 0, 0, w, h, 'rgba(240,228,200,0.05)', 0.05, 41);
+  speckle(c, 0, 0, w, h, 'rgba(10,6,2,0.07)', 0.05, 97);
+  // a few paper fibres
+  c.strokeStyle = 'rgba(240,228,200,0.04)';
+  let seed = 23; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 40; i++) {
+    const fx = rnd() * w, fy = rnd() * h;
+    c.beginPath(); c.moveTo(fx, fy); c.lineTo(fx + rnd() * 8 - 4, fy + rnd() * 4 - 2); c.stroke();
+  }
+  return cv;
 }
 
 // glow

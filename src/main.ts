@@ -3,7 +3,7 @@ import { haptics } from './engine/haptics';
 import { audio } from './engine/audio';
 import {
   ROOMW, H, WALK_MIN_Y, WALK_MAX_Y, WIN, GLOW, applyTheme,
-  drawRoom, drawCity, drawForeground, drawShaft, drawPlant, drawMoosh, drawZosia, drawGlow,
+  drawRoom, drawCity, drawForeground, drawShaft, drawPlant, drawMoosh, drawZosia, drawGlow, drawGrain, PAL,
 } from './game/art';
 
 // theme must apply before any draw calls
@@ -45,6 +45,7 @@ let zosia: Sprite, plantSpr: Sprite, mooshSpr: Sprite;
 let zosiaFrames: Texture[] = [];
 let phoneGlow: Sprite, lampGlow: Sprite, neonGlow: Sprite;
 let rainG: Graphics, motesG: Graphics, revealG: Graphics;
+let inkA: Sprite | null = null, inkB: Sprite | null = null;
 
 const ZSCALE = 0.2; // 100×210 smooth frames → 20×42 world units
 const Z = { x: 280, y: 190, tx: 280, ty: 190, walking: false, flip: false, frame: 0, ft: 0 };
@@ -68,7 +69,14 @@ async function boot() {
 
   citySpr = new Sprite(tex(drawCity()));
   world.addChild(citySpr);
-  world.addChild(new Sprite(tex(drawRoom())));
+  const roomT = tex(drawRoom());
+  world.addChild(new Sprite(roomT));
+  if (PAL.print) {
+    // misregistered ink plates: the print is alive under the loupe
+    inkA = new Sprite(roomT); inkA.tint = 0xff6a3d; inkA.alpha = 0.16; inkA.blendMode = 'add'; inkA.position.set(-1, 0);
+    inkB = new Sprite(roomT); inkB.tint = 0x3d9dbf; inkB.alpha = 0.14; inkB.blendMode = 'add'; inkB.position.set(1, 1);
+    world.addChild(inkA); world.addChild(inkB);
+  }
 
   const glowT = tex(drawGlow(64), true);
   lampGlow = new Sprite(glowT); lampGlow.tint = GLOW.lamp; lampGlow.alpha = GLOW.lampA;
@@ -104,6 +112,11 @@ async function boot() {
   world.addChild(zosia);
 
   fgSpr = new Sprite(tex(drawForeground())); world.addChild(fgSpr);
+  if (PAL.print) {
+    const grain = new Sprite(tex(drawGrain(ROOMW, H)));
+    grain.alpha = 0.8;
+    world.addChild(grain);
+  }
   revealG = new Graphics(); world.addChild(revealG);
 
   app.stage.addChild(world);
@@ -177,6 +190,10 @@ function tick(ticker: { deltaMS: number }) {
   mooshSpr.scale.y = 1 + Math.sin(t * 2.1) * 0.03;
   mooshSpr.scale.x = 1 - Math.sin(t * 2.1) * 0.02;
 
+  if (inkA && inkB) {
+    inkA.position.set(-1 + Math.sin(t * 0.43) * 0.6, Math.cos(t * 0.31) * 0.4);
+    inkB.position.set(1 + Math.sin(t * 0.37 + 2) * 0.6, 1 + Math.cos(t * 0.29 + 1) * 0.4);
+  }
   phoneGlow.alpha = GLOW.phoneA - 0.1 + Math.sin(t * 1.7) * 0.1;
   lampGlow.alpha = Math.random() < 0.006 ? GLOW.lampA * 0.5 : GLOW.lampA + Math.sin(t * 0.7) * 0.05; // lamp hum
   neonGlow.position.set(WIN.x - 30 + cx * 0.15 + 24, WIN.y + 4);
@@ -591,6 +608,7 @@ function bindUI() {
   $('shutter').addEventListener('click', shutter);
   $('camClose').addEventListener('click', () => { closeCam(); openPhoneBare(); });
   phoneEl.addEventListener('click', (e) => { if (e.target === phoneEl) closePhone(); });
+  $('phoneClose').addEventListener('click', () => closePhone());
 }
 
 // ---- scene routing: 'moosh' = the styled hand-built slice; anything else

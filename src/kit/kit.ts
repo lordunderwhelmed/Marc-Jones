@@ -60,6 +60,7 @@ export class Interp {
   unlocked = new Set<string>();
   examined = new Set<string>();
   private dialogId: string | null = null;
+  private lastRef: string | null = null;   // smart resume: last node visited
 
   constructor(public scene: Scene, public shell: Shell) {
     this.flags = { ...scene.flags };
@@ -104,7 +105,12 @@ export class Interp {
       }
       if (op.haptic) this.shell.haptic(op.haptic);
       if (op.sfx) this.shell.sfx(op.sfx);
-      if (op.dialog) this.gotoDialog(op.dialog);
+      if (op.dialog) {
+        // resume where we left off unless the op names an explicit node
+        const dId = op.dialog.split('.')[0];
+        if (!op.dialog.includes('.') && this.lastRef?.startsWith(dId + '.')) this.gotoDialog(this.lastRef);
+        else this.gotoDialog(op.dialog);
+      }
       if (op.end) this.shell.end(op.end.counter, op.end.line);
     }
   }
@@ -116,6 +122,7 @@ export class Interp {
     if (this.dialogId !== dId) { this.shell.openDialog(d.tag ?? this.scene.title); this.dialogId = dId; }
     const node = d.nodes[nId];
     if (!node) return;
+    this.lastRef = `${dId}.${nId}`;
     this.shell.botLine(node.text);
     this.shell.setChoices(
       node.choices
@@ -124,12 +131,16 @@ export class Interp {
           t: c.t,
           fn: () => {
             if (c.do) this.run(c.do);
-            if (c.goto === '@close') { this.dialogId = null; this.shell.closeDialog(); }
+            if (c.goto === '@close') { this.dialogId = null; this.shell.closeDialog(); } // lastRef kept: reopening resumes here
             else if (c.goto) this.gotoDialog(`${dId}.${c.goto}`);
           },
         })),
     );
   }
+
+  /** Player closed the chat UI (backdrop tap / ✕). Conversation state is
+   *  preserved — the next dialog op resumes at the node they left. */
+  externalClose() { this.dialogId = null; this.shell.closeDialog(); }
 
   hitTest(x: number, y: number): Hotspot | null {
     let best: Hotspot | null = null, area = Infinity;
