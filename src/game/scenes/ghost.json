@@ -1,0 +1,80 @@
+{
+  "id": "z0-5-ghost",
+  "title": "The Ghost",
+  "room": {
+    "w": 420, "h": 216, "floorY": 150, "walkMinY": 166, "walkMaxY": 204,
+    "blocks": [
+      { "id": "hall", "x": 0, "y": 0, "w": 420, "h": 150, "tint": "#20242e", "label": "" },
+      { "id": "marble", "x": 0, "y": 150, "w": 420, "h": 66, "tint": "#2a2e3a", "label": "" },
+      { "id": "kiosk", "x": 180, "y": 70, "w": 60, "h": 86, "tint": "#3a4152", "label": "kiosk" },
+      { "id": "kioskScreen", "x": 192, "y": 82, "w": 36, "h": 26, "tint": "#7adfff", "label": "" },
+      { "id": "ropes", "x": 60, "y": 120, "w": 100, "h": 36, "tint": "#5c2f3c", "label": "velvet ropes" },
+      { "id": "poster", "x": 300, "y": 34, "w": 70, "h": 64, "tint": "#4a5468", "label": "poster" },
+      { "id": "clock", "x": 96, "y": 30, "w": 26, "h": 26, "tint": "#c9c4b0", "label": "02:59" },
+      { "id": "doors", "x": 10, "y": 44, "w": 50, "h": 108, "tint": "#2c3040", "label": "doors" }
+    ]
+  },
+  "actor": { "start": [320, 192], "name": "viktor" },
+  "flags": { "terminated": false },
+  "goal": "terminated",
+  "onStart": [{ "cue": "entry" }],
+  "cues": {
+    "entry": { "who": "the book", "text": "Two-fifty-nine. He'd been dead for years. Somebody else's years." },
+    "terminate": { "who": "the book", "text": "He looked into the kiosk camera — into us — and pressed it. The hour was nearly full." }
+  },
+  "hotspots": [
+    { "id": "ropes", "label": "velvet ropes", "rect": [56, 116, 108, 44], "walkX": 120,
+      "examine": "A queue system for a hall that hasn't seen a human teller since the twenties. The ropes remain. Ropes are patient." },
+    { "id": "poster", "label": "poster", "rect": [296, 30, 78, 72], "walkX": 320,
+      "examine": "'YOUR MONEY, SMARTER.' The poster's man smiles at a graph. The graph is of the poster's man's smile." },
+    { "id": "clock", "label": "clock", "rect": [92, 26, 34, 34], "walkX": 118,
+      "examine": "02:59. Sixty-one seconds left in the hour of refunds." },
+    { "id": "doors", "label": "doors", "rect": [6, 40, 58, 112], "walkX": 80,
+      "examine": "Locked until 09:00. The kiosk never sleeps. Neither, apparently, do I." },
+    { "id": "kiosk", "label": "kiosk", "rect": [176, 66, 68, 92], "walkX": 210,
+      "examine": "It knows me. Thirty percent of me, anyway. The wrong thirty percent.",
+      "use": [
+        { "do": [{ "dialog": "bank" }, { "haptic": "tick" }, { "sfx": "blip" }] }
+      ] }
+  ],
+  "dialogs": {
+    "bank": {
+      "tag": "MERIDIAN SELF-BANK · night kiosk",
+      "nodes": {
+        "start": {
+          "text": "Welcome! Identity check… VIKTOR K. — MATCH CONFIDENCE: 70%. Advisory: 30% match with a deceased account holder carrying outstanding obligations and a criminal record. Available services: viewing this message.",
+          "choices": [
+            { "t": "I am not dead.", "goto": "dead" },
+            { "t": "I've banked here for six years.", "goto": "loyal" },
+            { "t": "Account settings.", "goto": "confirm" }
+          ]
+        },
+        "dead": {
+          "text": "UNDERSTOOD. To dispute, please provide proof of life in person at any staffed branch. Staffed branches within 500km: 0.",
+          "choices": [
+            { "t": "…", "goto": "start" },
+            { "t": "Account settings.", "goto": "confirm" }
+          ]
+        },
+        "loyal": {
+          "text": "LOYALTY CONFIRMED. Note: deceased customers are among our most loyal. They rarely switch providers.",
+          "choices": [
+            { "t": "Account settings.", "goto": "confirm" }
+          ]
+        },
+        "confirm": {
+          "text": "Closing this account will not affect your outstanding obligations (they belong to someone else, who is you). Your 6 years of loyalty will be transferred to: no one. Proceed?",
+          "choices": [
+            { "t": "TERMINATE.",
+              "do": [
+                { "set": { "terminated": true } },
+                { "haptic": "terminate" }, { "sfx": "terminate" }, { "cue": "terminate" },
+                { "end": { "counter": "555,789", "line": "02:59. The last one we watch. Then the counter spins — and somewhere, a dashboard draws a line half a centimeter down." } }
+              ],
+              "goto": "@close" }
+          ]
+        }
+      }
+    }
+  }
+}

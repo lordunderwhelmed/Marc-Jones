@@ -153,7 +153,9 @@ export async function bootBlockout(scene: Scene) {
     end(counter, line) {
       shell.closeDialog();
       const end = $('endPage'); end.style.display = 'flex';
-      $('counterBig').textContent = String(Math.max(0, Number(counter) - 1));
+      const n = Number(counter.replace(/[^0-9]/g, ''));
+      const simple = Number.isFinite(n) && n < 100;
+      $('counterBig').textContent = simple ? String(Math.max(0, n - 1)) : '…';
       window.setTimeout(() => { $('counterBig').textContent = counter; haptics.play('impact'); }, 900);
       window.setTimeout(() => { $('endLine').innerHTML = line; }, 1600);
     },

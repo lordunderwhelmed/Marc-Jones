@@ -605,13 +605,32 @@ if (SCENE_SEL === 'moosh') {
   }).catch(() => { localStorage.removeItem('bg-scene'); location.reload(); });
 }
 
-// blockout/back toggle on the start page
-const tgl = document.getElementById('btnBlockout');
-if (tgl) {
-  tgl.textContent = SCENE_SEL === 'moosh' ? '▦ blockout playtest: The Mushroom (no art)' : '← back to the kitchen (styled)';
-  tgl.addEventListener('click', () => {
-    if (SCENE_SEL === 'moosh') localStorage.setItem('bg-scene', 'mushroom');
-    else localStorage.removeItem('bg-scene');
-    location.reload();
-  });
+// scene picker on the start page (styled slice + blockout playtests)
+const SCENE_LIST: [string, string][] = [
+  ['moosh', 'The Moosh · styled'],
+  ['mushroom', '▦ The Mushroom'],
+  ['ticket', '▦ The Ticket'],
+  ['date', '▦ The Date'],
+  ['ghost', '▦ The Ghost'],
+];
+const pick = document.getElementById('btnBlockout');
+if (pick) {
+  pick.style.display = 'none';
+  const row = document.createElement('div');
+  row.id = 'scenePick';
+  row.style.cssText = 'margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:90vw;';
+  for (const [id, label] of SCENE_LIST) {
+    const b2 = document.createElement('button');
+    b2.className = 'themeBtn' + (id === SCENE_SEL ? ' sel' : '');
+    b2.textContent = label;
+    b2.addEventListener('click', () => {
+      if (id === SCENE_SEL) return;
+      if (id === 'moosh') localStorage.removeItem('bg-scene');
+      else localStorage.setItem('bg-scene', id);
+      const u = new URL(location.href); u.searchParams.delete('scene');
+      location.href = u.toString();
+    });
+    row.appendChild(b2);
+  }
+  pick.parentElement!.insertBefore(row, pick);
 }

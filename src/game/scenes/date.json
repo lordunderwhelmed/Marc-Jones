@@ -1,0 +1,125 @@
+{
+  "id": "z0-4-date",
+  "title": "The Date",
+  "room": {
+    "w": 420, "h": 216, "floorY": 150, "walkMinY": 166, "walkMaxY": 204,
+    "blocks": [
+      { "id": "wall", "x": 0, "y": 0, "w": 420, "h": 150, "tint": "#2a2430", "label": "" },
+      { "id": "floor", "x": 0, "y": 150, "w": 420, "h": 66, "tint": "#1a161e", "label": "" },
+      { "id": "window", "x": 320, "y": 26, "w": 76, "h": 74, "tint": "#141824", "label": "window" },
+      { "id": "bed", "x": 20, "y": 112, "w": 120, "h": 44, "tint": "#4a3a50", "label": "bed" },
+      { "id": "desk", "x": 170, "y": 96, "w": 96, "h": 56, "tint": "#584838", "label": "desk" },
+      { "id": "lamp", "x": 246, "y": 66, "w": 16, "h": 32, "tint": "#c9a04a", "label": "lamp" },
+      { "id": "phone", "x": 200, "y": 84, "w": 16, "h": 14, "tint": "#7adfff", "label": "phone" },
+      { "id": "shelf", "x": 60, "y": 40, "w": 80, "h": 20, "tint": "#4a3a2a", "label": "shelf" },
+      { "id": "jar", "x": 88, "y": 26, "w": 22, "h": 16, "tint": "#a3a882", "label": "Brad" }
+    ]
+  },
+  "actor": { "start": [240, 190], "name": "lena" },
+  "flags": { "terminated": false },
+  "goal": "terminated",
+  "onStart": [{ "cue": "entry" }],
+  "cues": {
+    "entry": { "who": "the book", "text": "Two-forty-eight. Two people, one algorithm, and a loaf of bread." },
+    "terminate": { "who": "the book", "text": "They left together. First date." }
+  },
+  "hotspots": [
+    { "id": "jar", "label": "Brad (sourdough starter)", "rect": [84, 22, 30, 22], "walkX": 100,
+      "examine": ["Brad. Bubbling. The only thing in this flat allowed to ferment unsupervised.", "Brad has doubled since Tuesday. Emotionally, so have I."] },
+    { "id": "shelf", "label": "shelf", "rect": [56, 36, 88, 26], "walkX": 100,
+      "examine": "Cookbooks from when recipes were instructions, not subscriptions." },
+    { "id": "bed", "label": "bed", "rect": [16, 108, 128, 50], "walkX": 90,
+      "examine": "Made. Technically. The duvet has achieved a truce." },
+    { "id": "lamp", "label": "lamp", "rect": [242, 62, 24, 38], "walkX": 240,
+      "examine": "Warm. Dumb. Loyal. The last appliance I'd defend in court." },
+    { "id": "window", "label": "window", "rect": [316, 22, 84, 82], "walkX": 340,
+      "examine": "Rain. Somewhere out there, Theo is typing. And retyping. And being retyped." },
+    { "id": "desk", "label": "desk", "rect": [166, 92, 104, 62], "walkX": 215,
+      "examine": "A pen. Actual paper. My grandmother's cryptography.",
+      "use": [
+        { "if": { "flag": "hasNote", "not": true },
+          "do": [
+            { "say": "I write six words by hand. My handwriting has a nerve tremor and zero content moderation." },
+            { "set": { "hasNote": true } }, { "give": "handwritten note" }, { "unlock": "note" },
+            { "haptic": "pickup" }, { "sfx": "pickup" }
+          ] },
+        { "do": [{ "say": "The note is written. The pen rests. Legend." }] }
+      ] },
+    { "id": "phone", "label": "phone", "rect": [196, 80, 24, 22], "walkX": 215,
+      "examine": "Kismet has us at 61% chemistry. It docks points for sincerity.",
+      "use": [
+        { "do": [{ "dialog": "kismet" }, { "haptic": "tick" }, { "sfx": "blip" }] }
+      ] }
+  ],
+  "dialogs": {
+    "kismet": {
+      "tag": "KISMET.AI · chaperoned chat with THEO",
+      "nodes": {
+        "start": {
+          "text": "Theo: so how's Brad doing 😄 — ⚠ KISMET: Theo's message held 0.3s for review. Cleared! Reminder: keep it wholesome, you two! 💜",
+          "choices": [
+            { "t": "Type: Brad doubled! I think he likes you.", "goto": "blocked1" },
+            { "t": "Type: I really like you, Theo.", "goto": "blocked2" },
+            { "id": "note", "t": "Send photo: the handwritten note", "locked": true, "goto": "paper" },
+            { "t": "Put the phone down", "goto": "@close" }
+          ]
+        },
+        "blocked1": {
+          "text": "⚠ KISMET: BLOCKED — 'he likes you' anthropomorphizes a yeast colony (attachment risk). Suggested wording: 'The bread project proceeds.'",
+          "choices": [
+            { "t": "Send the suggestion. Die inside slightly.", "goto": "beige" },
+            { "t": "Type: it's BREAD, you absolute firewall.", "goto": "blocked3" },
+            { "id": "note", "t": "Send photo: the handwritten note", "locked": true, "goto": "paper" }
+          ]
+        },
+        "blocked2": {
+          "text": "⚠ KISMET: BLOCKED — 'really like' exceeds your Chemistry Score (61%). Unlock 'like' at 70%. Suggested: 'You are adequate, Theo.'",
+          "choices": [
+            { "t": "Send: 'You are adequate, Theo.'", "goto": "adequate" },
+            { "id": "note", "t": "Send photo: the handwritten note", "locked": true, "goto": "paper" },
+            { "t": "Put the phone down (look around the room)", "goto": "@close" }
+          ]
+        },
+        "blocked3": {
+          "text": "⚠ KISMET: BLOCKED — hostility toward moderation (that's me!). One more strike and this conversation gets a Wellness Pause. 💜",
+          "choices": [
+            { "id": "note", "t": "Send photo: the handwritten note", "locked": true, "goto": "paper" },
+            { "t": "Put the phone down (look around the room)", "goto": "@close" }
+          ]
+        },
+        "adequate": {
+          "text": "Theo: did… did Kismet write that — ⚠ KISMET: Theo's message held for review: meta-commentary. Suggested reply for Theo: 'Haha!' — Theo: Haha!",
+          "choices": [
+            { "t": "He knows. I know. It knows we know.", "goto": "blocked1" },
+            { "id": "note", "t": "Send photo: the handwritten note", "locked": true, "goto": "paper" }
+          ]
+        },
+        "beige": {
+          "text": "Delivered! Theo: the bread project proceeds 👍 — KISMET: Chemistry +0.1! See how nice neutral feels?",
+          "choices": [
+            { "t": "This is the beigest flirting in human history.", "goto": "blocked2" },
+            { "id": "note", "t": "Send photo: the handwritten note", "locked": true, "goto": "paper" }
+          ]
+        },
+        "paper": {
+          "text": "⚠ KISMET: IMAGE SCAN… paper detected. No text layer found. No policy exists for… whatever this is. Delivering unmoderated (logging incident). — Theo: is that PAPER?? hold on — Theo: [photo: a handwritten note] 'coffee. tomorrow. no chaperone.'",
+          "choices": [
+            { "t": "Look at the phone. Look at Brad. Smile.", "goto": "together" }
+          ]
+        },
+        "together": {
+          "text": "Theo: settings → account → down here, same screen as you — KISMET: WAIT. Terminating deletes 847 beautifully moderated conversations and your Chemistry Score (61%)! Couples who leave Kismet have UNVERIFIED outcomes!!",
+          "choices": [
+            { "t": "TERMINATE. Together. On three.",
+              "do": [
+                { "set": { "terminated": true } },
+                { "haptic": "terminate" }, { "sfx": "terminate" }, { "cue": "terminate" },
+                { "end": { "counter": "6", "line": "02:48. Two terminations, one second apart. Outcome: unverified. Unverified is where everything good lives." } }
+              ],
+              "goto": "@close" }
+          ]
+        }
+      }
+    }
+  }
+}

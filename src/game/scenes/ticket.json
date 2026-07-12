@@ -1,0 +1,409 @@
+{
+  "id": "z0-3-ticket",
+  "title": "The Ticket",
+  "room": {
+    "w": 520,
+    "h": 216,
+    "floorY": 150,
+    "walkMinY": 166,
+    "walkMaxY": 204,
+    "blocks": [
+      {
+        "id": "night",
+        "x": 0,
+        "y": 0,
+        "w": 520,
+        "h": 150,
+        "tint": "#181c26",
+        "label": ""
+      },
+      {
+        "id": "street",
+        "x": 0,
+        "y": 150,
+        "w": 520,
+        "h": 66,
+        "tint": "#12141c",
+        "label": ""
+      },
+      {
+        "id": "lamp",
+        "x": 240,
+        "y": 10,
+        "w": 14,
+        "h": 140,
+        "tint": "#4a4430",
+        "label": "streetlamp"
+      },
+      {
+        "id": "window",
+        "x": 60,
+        "y": 20,
+        "w": 60,
+        "h": 50,
+        "tint": "#3d3018",
+        "label": "Ada's window"
+      },
+      {
+        "id": "sedan",
+        "x": 40,
+        "y": 110,
+        "w": 130,
+        "h": 44,
+        "tint": "#3a4152",
+        "label": "the sedan (not his)"
+      },
+      {
+        "id": "ticket",
+        "x": 88,
+        "y": 104,
+        "w": 26,
+        "h": 12,
+        "tint": "#c9c4b0",
+        "label": "citation"
+      },
+      {
+        "id": "grim",
+        "x": 300,
+        "y": 90,
+        "w": 56,
+        "h": 66,
+        "tint": "#50565f",
+        "label": "GRIM-77"
+      },
+      {
+        "id": "culprit",
+        "x": 400,
+        "y": 108,
+        "w": 110,
+        "h": 46,
+        "tint": "#5c2f1c",
+        "label": "car across the street"
+      },
+      {
+        "id": "puddle",
+        "x": 200,
+        "y": 178,
+        "w": 80,
+        "h": 20,
+        "tint": "#1e2836",
+        "label": "puddle"
+      }
+    ]
+  },
+  "actor": {
+    "start": [
+      200,
+      192
+    ],
+    "name": "marek"
+  },
+  "flags": {
+    "terminated": false
+  },
+  "goal": "terminated",
+  "onStart": [
+    {
+      "cue": "entry"
+    }
+  ],
+  "cues": {
+    "entry": {
+      "who": "the book",
+      "text": "Two-thirty-one. The law, parked and patient, was about to be wrong twice."
+    },
+    "terminate": {
+      "who": "the book",
+      "text": "Two more. One for the ticket. One for the view from the window."
+    }
+  },
+  "hotspots": [
+    {
+      "id": "sedan",
+      "label": "the sedan",
+      "rect": [
+        38,
+        106,
+        134,
+        50
+      ],
+      "walkX": 110,
+      "examine": [
+        "Not my car. I was standing near it. In 2035, that's ownership.",
+        "Nice car, though. Whoever gets my ticket has taste."
+      ]
+    },
+    {
+      "id": "ticket",
+      "label": "citation",
+      "rect": [
+        84,
+        100,
+        34,
+        18
+      ],
+      "walkX": 108,
+      "examine": "CITATION: unlawful proximity to a parked vehicle. $140, payable in installments of dignity."
+    },
+    {
+      "id": "culprit",
+      "label": "car across the street",
+      "rect": [
+        398,
+        104,
+        114,
+        52
+      ],
+      "walkX": 380,
+      "examine": "There it is. Plate XK-55-TR — the actual offender. Parked on the hydrant like it owns it. Legally, it might.",
+      "use": [
+        {
+          "do": [
+            {
+              "say": "Photographed the plate. Old habit: evidence first, despair second."
+            },
+            {
+              "unlock": "plate"
+            },
+            {
+              "haptic": "pickup"
+            },
+            {
+              "sfx": "reveal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lamp",
+      "label": "streetlamp",
+      "rect": [
+        236,
+        8,
+        22,
+        144
+      ],
+      "walkX": 260,
+      "examine": "Sodium. The last honest light in the city."
+    },
+    {
+      "id": "window",
+      "label": "Ada's window",
+      "rect": [
+        56,
+        16,
+        68,
+        58
+      ],
+      "walkX": 90,
+      "examine": [
+        "Mrs. Adamec watches this street like prestige television. Tonight's episode: me.",
+        "She waved. The wave meant: I saw everything, and I have opinions."
+      ]
+    },
+    {
+      "id": "puddle",
+      "label": "puddle",
+      "rect": [
+        196,
+        174,
+        88,
+        26
+      ],
+      "walkX": 240,
+      "examine": "A puddle doing its best impression of the sky. Better rating than the sky, too."
+    },
+    {
+      "id": "grim",
+      "label": "GRIM-77",
+      "rect": [
+        296,
+        86,
+        64,
+        72
+      ],
+      "walkX": 280,
+      "examine": [
+        "GRIM-77. It hums. Its lens is wearing... is that garlic sauce?",
+        "The sauce has been there a while. It has seniority."
+      ],
+      "use": [
+        {
+          "if": {
+            "flag": "lensSeen",
+            "not": true
+          },
+          "do": [
+            {
+              "say": "A delivery drone has sneezed dinner directly onto its eye. Noted. Photographed. Cherished."
+            },
+            {
+              "set": {
+                "lensSeen": true
+              }
+            },
+            {
+              "unlock": "lens"
+            },
+            {
+              "haptic": "pickup"
+            },
+            {
+              "sfx": "reveal"
+            },
+            {
+              "dialog": "appeal"
+            }
+          ]
+        },
+        {
+          "do": [
+            {
+              "dialog": "appeal"
+            },
+            {
+              "haptic": "tick"
+            },
+            {
+              "sfx": "blip"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dialogs": {
+    "appeal": {
+      "tag": "GRIM-77 · CIVIC COMPLIANCE APPEAL",
+      "nodes": {
+        "start": {
+          "text": "CITIZEN. Citation #7742-K issued for: PARKING (you). Vehicle XK-55-TR matched at 91% confidence. How do you plead?",
+          "choices": [
+            {
+              "t": "I don't even own a car.",
+              "goto": "nocar"
+            },
+            {
+              "t": "You matched my JACKET.",
+              "goto": "jacket"
+            },
+            {
+              "id": "plate",
+              "t": "The real XK-55-TR is right across the street.",
+              "locked": true,
+              "goto": "plate1"
+            },
+            {
+              "id": "lens",
+              "t": "Your lens is wearing garlic sauce.",
+              "locked": true,
+              "goto": "lens1"
+            },
+            {
+              "t": "Step away from the robot",
+              "goto": "@close"
+            }
+          ]
+        },
+        "nocar": {
+          "text": "NOTED. Citation amended: PARKING WITHOUT A VEHICLE. Fine unchanged. Thank you for your honesty.",
+          "choices": [
+            {
+              "t": "That's worse. You made it worse.",
+              "goto": "start"
+            }
+          ]
+        },
+        "jacket": {
+          "text": "GARMENT-BASED IDENTIFICATION IS COURT-TESTED. THE COURT WAS ALSO A UNIT.",
+          "choices": [
+            {
+              "t": "…Of course it was.",
+              "goto": "start"
+            }
+          ]
+        },
+        "plate1": {
+          "text": "SCANNING… VEHICLE LOCATED. ANOMALY: TWO (2) XK-55-TR IN SECTOR. PLEASE STOP BEING THE SECOND ONE.",
+          "choices": [
+            {
+              "id": "lens",
+              "t": "Check your lens. It's wearing dinner.",
+              "locked": true,
+              "goto": "verdict"
+            },
+            {
+              "t": "I am a JACKET, not a car.",
+              "goto": "start"
+            }
+          ]
+        },
+        "lens1": {
+          "text": "DIAGNOSTIC… VISIBILITY: 34%. FLAVOR PROFILE: ROBUST. THIS DOES NOT AFFECT CONFIDENCE.",
+          "choices": [
+            {
+              "id": "plate",
+              "t": "At 34% visibility, scan the REAL plate. Across the street.",
+              "locked": true,
+              "goto": "verdict"
+            },
+            {
+              "t": "How does flavor not affect confidence?!",
+              "goto": "start"
+            }
+          ]
+        },
+        "verdict": {
+          "text": "RECALCULATING… APPEAL ACCEPTED. CITATION #7742-K: VOIDED. RECALIBRATING… NEW CITATION #7743-K ISSUED TO: XK-55-TR (VEHICLE, HYDRANT-ADJACENT). JUSTICE: RESTORED.",
+          "choices": [
+            {
+              "t": "That's Mrs. Adamec's nephew's car.",
+              "goto": "ada"
+            }
+          ]
+        },
+        "ada": {
+          "text": "ADDITIONAL: MOVEMENT DETECTED IN WINDOW 4B. RESIDENT HAS OPENED: CIVSHIELD APP. RESIDENT HAS SELECTED: ACCOUNT SETTINGS. THIS UNIT EXPERIENCES: NO FEELINGS ABOUT THIS.",
+          "choices": [
+            {
+              "t": "Open CivShield. Account settings.",
+              "goto": "confirm"
+            }
+          ]
+        },
+        "confirm": {
+          "text": "CIVSHIELD: Closing your account forfeits 12 Compliance Stars and your Good Standing (currently: cited). Are you sure?",
+          "choices": [
+            {
+              "t": "TERMINATE. AND TELL THE COURT-UNIT I SAID HI.",
+              "do": [
+                {
+                  "set": {
+                    "terminated": true
+                  }
+                },
+                {
+                  "haptic": "terminate"
+                },
+                {
+                  "sfx": "terminate"
+                },
+                {
+                  "cue": "terminate"
+                },
+                {
+                  "end": {
+                    "counter": "4",
+                    "line": "02:31. Citation voided. Above the street, Ada's window went dark — then her account did too. Two more of 555,789."
+                  }
+                }
+              ],
+              "goto": "@close"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
