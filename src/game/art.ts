@@ -345,23 +345,28 @@ export function drawPlant(hasParsley: boolean): HTMLCanvasElement {
   c.fillStyle = '#96603f'; c.fillRect(11, 25, 14, 1);
   c.fillStyle = '#5e3824'; c.fillRect(11, 31, 14, 1);
   c.fillStyle = '#8a5638'; c.fillRect(12, 27, 12, 1);
-  // curly parsley: a dense bushy mound of small ruffled leaflets
-  const cx = 18, cy = 14, rx = 13, ry = 11;
-  for (let y = 3; y <= 26; y += 2) {
-    for (let x = 3; x <= 33; x += 2) {
-      const nx = (x - cx) / rx, ny = (y - cy) / ry;
-      if (nx * nx + ny * ny > 1) continue;
-      const t = (cy + ry - y) / (ry * 2);             // 1 = top (lit), 0 = base (shadow)
-      const h = (x * 7 + y * 13) % 5;                 // sparse curl texture
-      let col = t > 0.6 ? PAL.leafL : t > 0.3 ? PAL.leaf : '#2c451c';
-      if (h === 3 && t > 0.35) col = PAL.parsley;     // scattered bright curls
-      c.fillStyle = col; c.fillRect(x, y, 2, 2);
+  // curly parsley: overlapping ruffled sprig-clusters on thin stems — reads as
+  // a potted herb, not a solid bush. Each sprig is a little rosette of leaflets.
+  const dark = '#2c451c';
+  const sprigs: [number, number, number][] = [ // x, top-y, radius
+    [12, 12, 4], [16, 7, 5], [21, 10, 4], [25, 13, 3], [14, 15, 3], [23, 15, 3], [19, 12, 5],
+  ];
+  c.fillStyle = '#3a5a24';                         // stems down into the pot
+  for (const [sx, sy] of sprigs) c.fillRect(sx, sy, 1, 25 - sy);
+  for (const [sx, sy, r] of sprigs.slice().sort((a, b) => a[1] - b[1])) {
+    for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+      if (dx * dx + dy * dy > r * r) continue;
+      const x = sx + dx, y = sy + dy;
+      if (x < 1 || x > 34 || y < 1 || y > 26) continue;
+      let col = dy > r * 0.35 ? dark : dy < -r * 0.35 ? PAL.leafL : PAL.leaf;  // top-lit rosette
+      if (((x * 5 + y * 11) % 4) === 0 && dy <= 0) col = PAL.parsley;          // curl flecks
+      c.fillStyle = col; c.fillRect(x, y, 1, 1);
     }
   }
   if (!hasParsley) {
     // a sprig has been picked — a small bare gap with a cut stem
-    c.fillStyle = '#2c451c'; c.fillRect(13, 6, 4, 3);
-    c.fillStyle = '#8a5638'; c.fillRect(14, 7, 1, 3);
+    c.fillStyle = dark; c.fillRect(15, 6, 3, 2);
+    c.fillStyle = '#8a5638'; c.fillRect(16, 7, 1, 3);
   }
   return cv;
 }

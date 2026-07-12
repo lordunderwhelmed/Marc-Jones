@@ -114,7 +114,7 @@ async function boot() {
   rainG = new Graphics(); world.addChild(rainG);
   motesG = new Graphics(); world.addChild(motesG);
 
-  plantSpr = new Sprite(tex(drawPlant(true))); plantSpr.position.set(503, 78); world.addChild(plantSpr);
+  plantSpr = new Sprite(tex(drawPlant(true))); plantSpr.position.set(294, 112); world.addChild(plantSpr);
   fridgeOverlay = new Sprite(tex(drawFridgeOpen())); fridgeOverlay.position.set(146, 46); fridgeOverlay.visible = false; world.addChild(fridgeOverlay);
   sockSpr = new Sprite(tex(drawSock())); sockSpr.position.set(94, 164); world.addChild(sockSpr);
   mooshSpr = new Sprite(tex(drawMoosh(false))); mooshSpr.anchor.set(0.5, 1); mooshSpr.position.set(352, 144); world.addChild(mooshSpr);
