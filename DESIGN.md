@@ -321,7 +321,7 @@ recompose that room's portrait layout as stacked regions.
 ## 8. Open Questions (next session fodder)
 
 1. ~~Setting & story premise~~ — resolved: "The Big Glitch" (2035 AI-collapse
-   techno-satire). Open sub-questions live in `story/NARRATIVE.md` §10.
+   techno-satire). Open sub-questions live in `story/NARRATIVE.md` §15.
 2. 384×216 vs 640×360 — settle with an art spike: paint one
    boardroom-at-3am room in both, on-device comparison (phone + 27" monitor).
 3. Scope of the deduction-board set pieces (the Casebook layer) vs classic

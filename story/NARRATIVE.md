@@ -53,22 +53,31 @@ distributed, no demographic pattern, all terminate between 02:00 and 03:03am,
 then it *stops*. Coordinated via secret Giddy groups. Why those people? Why
 that hour? Why did it stop — and what is it counting down to?
 
-Proposed canon (to pressure-test together):
+Canon update (source drop 2, `backdrop-2.md` — the bar scene): the surface
+explanation is now given in the text itself. **The 03:03 Event was a virtual
+flashmob** organized in the private #fuckalgos sub-Giddy: frustrated Netflix
+Infinite users rallied to terminate simultaneously, targeting **666,666**
+accounts and "failing" at 555,789 — the account page crashed, and Netflix's
+engineers only found out after the fact. This also implies **Frank's company
+is Netflix (Infinite)** — decide whether to keep the name or keep the
+narrator's "it doesn't matter which one" gag by lightly fictionalizing.
 
-> The 555,789 are the first tranche of **"The Ledger"** — a manual,
-> human-verified registry of people harmed by algorithmic misidentification
-> (the fake-training-data doppelgängers, the henna misdiagnoses, the credit
-> ghosts). Each member opts out at the *exact minute of their documented
-> harm*, timestamp-encoded as protest art. The hour-long window spells out,
-> in exit-timestamps, a message no dashboard can read but any human who
-> prints it out can. The movement's architect: someone very close to the
-> tech aristocracy. Prime suspects the player cycles through: Andrew Johnson
-> (the ignored Cassandra), Steph (Giddy's CEO, carrying Frank's child and
-> Frank's platform's death warrant), Eric the Chief of Staff, and — the
-> misdirect — a "rogue Netflix Infinite agent" that turns out to be three
-> interns in a trench coat. The truth should indict marketing, not machines:
-> **AI didn't conspire; people did, using the one channel with no algorithm
-> watching.**
+That makes the flashmob the **Act 1 reveal**, not the endgame — the player
+learns it the same night via the bar scene. The mystery deepens instead of
+closing (see §11, The Truth Stack): Why 666,666? Why did it "fail" at
+exactly 555,789 — and why the scare quotes? Who seeded the sub-Giddy? The
+earlier Ledger timestamp-cipher hypothesis is demoted to a candidate for
+this second layer (the flashmob's *organizers* may have encoded meaning in
+what looked like failure), to pressure-test rather than assume.
+
+⚠ **Intro implication to decide**: the Chapter Zero vignettes currently end
+with each victim terminating a *different* service (Nourly, Kismet, banks).
+Canon now says the 555,789 were all Netflix Infinite accounts. Preferred
+fix (A): the vignettes keep their diverse glitches, but each victim's final
+press converges on the same target — the flashmob channel — making the
+point that the protest needed one shared symbol. Alternative (B): keep
+multi-service and let the 555,789 be Netflix-only within a larger night.
+Decision pending; the slice is unaffected until then.
 
 The spine is a five-act tragedy of the collapse (2031 Travis flashback → 2035
 Night of the Sheep → the deflation → the burning offices → "A new damn"),
@@ -335,12 +344,127 @@ Rules:
   Total Body**, Frank's company deliberately unnamed for one full act (the
   narrator: "it doesn't matter which one; that's the point").
 
-## 10. Open questions for the next brainstorm
+## 11. The Truth Stack (source drop 2 — the mystery's real architecture)
 
-1. Is Frank's company *the* platform (a super-app) or one of eight? (The
-   backdrop implies interchangeability — that may be the joke to keep.)
-2. Who authored the Ledger — confirm/kill the Steph hypothesis; her pregnancy
-   subplot needs a dignity-preserving arc, not a soap twist.
+The clickworker revelation gives the story a three-layer truth, each one a
+full act-level reveal. The game's title thesis "AI doesn't exist" turns out
+to be **literal**:
+
+- **Layer 1 — The Flashmob (Act 1).** The 03:03 Event was people, organized
+  on the one platform with no algorithm watching. Revealed in the bar scene
+  the same night it happens. The player thinks the mystery is "who organized
+  it."
+- **Layer 2 — The Clickworker Revelation (midpoint, the old-man scene).**
+  It's "Amazon Go all the way down": pre-computed responses + vector
+  retrieval + **armies of penny clickworkers handling edge cases**.
+  "Hallucinations" are tired, underpaid humans missing errors in languages
+  they barely read. The infrastructure exists (storage and retrieval farms)
+  but doesn't do what's claimed; the credible-laureate endorsements were
+  bought (the "Laureate hoax" — see fictionalization note, §14); dissent was
+  salaried into silence. Deglobalization was cover: making the world too
+  fragmented to audit the bluff. **This retroactively rewrites every
+  Casebook verdict** — the Root-Cause Board's thesis "it's never the robot
+  uprising, it's always the KPI" gains its devastating second layer: *it was
+  never even the algorithm; it was a hidden, exhausted human workforce
+  behind it.* (New Game+ "Annotated Edition" re-annotates solved cases with
+  the clickworker's side — the strongest possible use of that system.)
+  GRAVY's Act-0 joke — "our chefs: 297 GPUs, one intern" — is hereby
+  promoted from gag to planted foreshadowing.
+- **Layer 3 — The Pivot (endgame tease / season hook).** They believed. The
+  consortium acted out of fear, not greed — an EA-flavored "intervention" to
+  pause a world they saw decoupling (the source is explicit: corrupted by
+  power, not cartoon evil — this is Frank's conviction-comedy register
+  scaled up to villainy). And around 2024 they pivoted to "a new foundation
+  for AI" that nobody, including the old man, can describe. What Mo finds at
+  the bottom "escapes both his imagination and that of any other person in
+  the world." Deliberately unresolved in the source — our season-finale
+  cliff. Imagery bank for the descent: hundreds of nuclear plants; endless
+  underground tunnels of cold, quiet servers; the data-center cathedral of
+  Act 5 recontextualized — half-empty, humming, storing everything and
+  thinking nothing.
+
+Tone guardrail (extends §7): the clickworkers are Travis-register material.
+They must appear as characters with names and dignity — never as a twist
+prop. Strongest candidate beat: a Casebook case where the "algorithm's"
+fatal error traces to a specific person on a night shift in Kampala, and
+the game lets you meet them. A clickworker POV chapter (or season lead) is
+now on the table.
+
+## 12. The Annotated Edition layer (jargon footnotes as education)
+
+Source note adopted whole: the book uses the tech world's real jargon
+(NPS, ARR, RLHF, vector database, revenue multiple, burn rate, "flywheel"),
+and **footnote annotations translate each term for civilians** — double
+purpose: the satire lands harder for insiders, and outsiders get an
+education in the mysterious machine that ate the economy. Implementation:
+jargon renders with a subtle underline in dialogue and narration; tapping
+it opens a margin note in the Book panel — written in the narrator's voice,
+so the glossary is *also* jokes ("NPS: a number between −100 and 100 that
+executives fear more than death. You have been asked to provide it after
+every experience you've ever had."). Fits the existing footnote doctrine
+(COMEDY.md §3) and the examine-layer rule: optional, never puzzle-critical.
+The full glossary doubles as a marketing artifact ("The Big Glitch
+Companion: a field guide to the AI bubble").
+
+## 13. The Glitch Mark (resistance iconography)
+
+From the source bullets: resistance members recognize each other by a
+worn sign — like the Jesus fish — "something on their clothes which stood
+for the idea of a glitch, maybe a hole." Adopt as a core visual device:
+
+- **The Mark**: a deliberate small rectangular hole or displaced-pixel patch
+  on clothing — one "dead pixel" on a sleeve or collar. In a pixel-art game
+  this is perfect: the world's resolution itself carries the symbol; the
+  player learns to *read sprites* for it, which turns every NPC into a
+  potential ally and makes attentiveness (our core verb) the recognition
+  mechanic. The hashtag drawn in dust (the source's mystery beat) is its
+  ephemeral variant.
+- Zosia's sweater gets the Mark after Chapter Zero — quietly, in the
+  background art, unannounced (Tier 2 secret).
+- Out-of-game: the Mark is the brand — Moments watermark, wordmark accent
+  (the ✦ in the current UI migrates to a dead-pixel glyph), merch-grade.
+
+## 14. Adaptation guardrails for drop 2
+
+- **Fictionalize real people** for the shipped game. The source names Hinton,
+  Elon, Ek, Altman, Trump; the adaptation replaces them with pattern-true
+  fictional counterparts (the "Laureate hoax"; "the richest man alive who
+  strip-mined his own car company for engineers") per the §8 ritual-not-brand
+  rule — both for timelessness and for the obvious legal reasons. The
+  backdrop files keep the originals as source.
+- **"The Hater's Guide To The AI Bubble"** is an existing 2025 Ed Zitron
+  essay title — use as tonal north star, not as a title. Title candidates
+  on record: *The Big Glitch* (still strongest), *Brave New Idiocracy*
+  (subtitle candidate for a season: *The Big Glitch: Brave New Idiocracy*).
+- **The Crumble arc** (outline bullets, adopted into the Deflation layer):
+  entry-level jobs consumed first; finance's public bet that AI climbs the
+  seniority ladder as juniors age out; insiders quietly exiting positions;
+  organizations hollowing from the inside while PR papers over it — "instead
+  of a revolution where people burn the banks like in Fight Club, everything
+  crumbles slowly, mostly undetected; when the world notices, it's too
+  late." Mechanically: a new Deflation dial (**Org Rot**) that rises
+  invisibly and is only *revealed* in retrospect — the one dial the
+  dashboards don't show, which is the point. The Fight Club inversion is
+  already built: nobody blows up the banks; **the TERMINATE button is the
+  demolition charge**, pressed 555,789 times, politely.
+- **The bar scene = Mo's true introduction** (proposal): the cynical
+  ex-tech-bro celebrating Big Tech's first bloody nose *is* Mo with the
+  edges the character needed — laid off, self-medicating, strategically
+  cynical, secretly thrilled. The V2 running-conversation and the old-man
+  scene then bracket his arc (Act 1 rumor → midpoint confirmation). His
+  toast — "Shots on me. Here's to the tech bros!" — is the chapter button.
+  (Substance use portrayal: keep, but it's a symptom the arc addresses, not
+  set dressing.)
+
+## 15. Open questions for the next brainstorm
+
+1. ~~Is Frank's company the platform or one of eight?~~ Drop 2 implies
+   Netflix (Infinite). Decide: keep the name vs. fictionalize (§3, §14).
+2. Who seeded the #fuckalgos flashmob — and what does the "failure" at
+   555,789 of 666,666 actually encode? (Steph hypothesis still live; her
+   pregnancy subplot needs a dignity-preserving arc, not a soap twist.)
+2b. Intro convergence decision: option A (all vignettes terminate the same
+   service — the flashmob channel) vs option B (multi-service night). §3.
 3. Case-generation pipeline: fully hand-authored cases only, or a
    hand-authored template system (bias type × sector × victim × cover-up)
    that designers assemble per episode? (Recommend the latter for seasonal
