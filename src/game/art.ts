@@ -340,33 +340,28 @@ export function drawShaft(): HTMLCanvasElement {
 // ------------------------------------------------------------- plant / moosh
 export function drawPlant(hasParsley: boolean): HTMLCanvasElement {
   const [cv, c] = canvas(36, 32);
-  // fern: arcing fronds with paired leaflets, fanning from the pot mouth
-  const fronds: [number, number][][] = [
-    [[17, 28], [15, 22], [12, 16], [8, 11], [4, 8]],
-    [[17, 28], [16, 21], [14, 14], [12, 8], [11, 3]],
-    [[18, 28], [19, 20], [20, 13], [22, 7], [25, 3]],
-    [[18, 28], [21, 22], [25, 17], [29, 13], [33, 11]],
-    [[17, 28], [13, 24], [8, 21], [3, 20]],
-    [[18, 28], [23, 25], [28, 23], [33, 23]],
-  ];
-  for (const f of fronds) {
-    for (let i = 0; i < f.length; i++) {
-      const [x, y] = f[i];
-      c.fillStyle = PAL.leaf; c.fillRect(x, y, 2, 2);
-      if (i > 0) { // paired leaflets off the stem
-        c.fillStyle = PAL.leafL;
-        c.fillRect(x - 2, y - 1, 2, 1); c.fillRect(x + 2, y + 1, 2, 1);
-      }
+  // terracotta pot
+  c.fillStyle = '#7a4a30'; c.fillRect(11, 25, 14, 7);
+  c.fillStyle = '#96603f'; c.fillRect(11, 25, 14, 1);
+  c.fillStyle = '#5e3824'; c.fillRect(11, 31, 14, 1);
+  c.fillStyle = '#8a5638'; c.fillRect(12, 27, 12, 1);
+  // curly parsley: a dense bushy mound of small ruffled leaflets
+  const cx = 18, cy = 14, rx = 13, ry = 11;
+  for (let y = 3; y <= 26; y += 2) {
+    for (let x = 3; x <= 33; x += 2) {
+      const nx = (x - cx) / rx, ny = (y - cy) / ry;
+      if (nx * nx + ny * ny > 1) continue;
+      const t = (cy + ry - y) / (ry * 2);             // 1 = top (lit), 0 = base (shadow)
+      const h = (x * 7 + y * 13) % 5;                 // sparse curl texture
+      let col = t > 0.6 ? PAL.leafL : t > 0.3 ? PAL.leaf : '#2c451c';
+      if (h === 3 && t > 0.35) col = PAL.parsley;     // scattered bright curls
+      c.fillStyle = col; c.fillRect(x, y, 2, 2);
     }
-    const tip = f[f.length - 1];
-    c.fillStyle = PAL.leafL; c.fillRect(tip[0], tip[1], 2, 1);
   }
-  if (hasParsley) {
-    // the immortal parsley: a bright curly crown, unmistakable
-    c.fillStyle = PAL.parsley;
-    c.fillRect(15, 0, 3, 2); c.fillRect(19, 1, 3, 2); c.fillRect(12, 2, 3, 2);
-    c.fillRect(16, 3, 4, 3); c.fillRect(21, 4, 2, 2);
-    c.fillStyle = PAL.leafL; c.fillRect(17, 6, 2, 4);
+  if (!hasParsley) {
+    // a sprig has been picked — a small bare gap with a cut stem
+    c.fillStyle = '#2c451c'; c.fillRect(13, 6, 4, 3);
+    c.fillStyle = '#8a5638'; c.fillRect(14, 7, 1, 3);
   }
   return cv;
 }

@@ -32,9 +32,9 @@ export const HOTSPOTS: HotspotDef[] = [
   { id: 'sink', label: 'smart tap', x: 106, y: 90, w: 40, h: 30, walkX: 128,
     examine: "The smart tap has three settings: filtered, sparkling, and legal disclaimer.",
     camLabel: 'HYDRATION STATION 97%' },
-  { id: 'plant', label: 'plastic fern', x: 504, y: 70, w: 32, h: 38, walkX: 492,
-    examine: "A plastic fern with plastic parsley. Immortal. The only thing in this kitchen that can't be recalled.",
-    examine2: "It photosynthesizes attention.",
+  { id: 'plant', label: 'plastic parsley', x: 504, y: 70, w: 32, h: 38, walkX: 492,
+    examine: "A pot of plastic parsley. Immortal — the only thing in this kitchen that can't be recalled. Or, it turns out, correctly identified.",
+    examine2: "It's plastic. The drone's camera is ninety-one percent sure it's a fresh salad. The camera has never been more confident, or more wrong.",
     camLabel: 'SALAD (undressed) 91%' },
   { id: 'moosh', label: 'the moosh', x: 330, y: 118, w: 44, h: 26, walkX: 330,
     examine: "It looks like a mix of the Gremlins and water. It cost $14.90, plus service, delivery, convenience, and inconvenience fees.",
@@ -126,7 +126,7 @@ export const CHAT = {
     "Hmm! My eyes — which are legally the drone's eyes — found no food in that photo. No food, no refund. That's just science.",
     "Still no food detected! Have you tried photographing the *food part* of the food?",
     "I'm seeing an UNRECOGNIZED OBJECT. Nourly⁺ cannot refund objects. Nourly⁺ refunds *meals*. Meals look like meals!",
-    "Between us? The classifier grades on presentation. I've already said too much. 🤫",
+    "Between us? The classifier grades on *appearance*, not edibility. It once approved a full refund for a photo of a houseplant. I've already said too much. 🤫",
   ],
   // GRAVY quotes the classifier's *noun*, never its raw confidence score —
   // a leaked "91%" in a chat bubble reads as an unfinished debug string.
@@ -137,6 +137,9 @@ export const CHAT = {
       : `That's not the item — but I appreciate the effort.`;
   },
   approved: "GORGEOUS. One (1) PLATED ENTRÉE, restaurant quality. ✓ Since the item is clearly excellent, your refund processes at the Excellence Rate: **$0.03**. Thanks for choosing Nourly⁺!",
+  // The parsley exploit: the classifier can't recognize the actual meal but is
+  // confidently, wrongly sure the plastic plant is food — so it refunds you for it.
+  approvedByGlitch: "SALAD (undressed). ✓ FOOD DETECTED — and I'm *ninety-one percent* sure, which for me is basically a wedding vow. Finally, a meal I recognize! Logging that plastic plant as your delivered item. Your refund processes at the Excellence Rate: **$0.03**. (For the record: I never did work out what the grey one was.)",
   approvedChoices: [
     { t: "Three cents.", r: "Plus tax! (The tax is negative two cents.)" },
     { t: "Account settings.", r: null },

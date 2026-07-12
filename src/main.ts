@@ -545,6 +545,11 @@ function shutter() {
   const id = camFocusId;
   closeCam();
   openPhoneBare();
+  if (id === 'plant') {
+    // THE EXPLOIT: the AI can't recognize the real meal but is 91% sure the
+    // plastic plant is food. Photograph its mistake and it refunds you for it.
+    return approve('glitch');
+  }
   if (id === 'moosh') {
     if (state.garnished) return approve();
     state.photoFails++;
@@ -569,11 +574,11 @@ function shutter() {
 function openPhoneBare() { phoneEl.classList.add('show'); audio.holdMusic(true); }
 
 // ----------------------------------------------------------- refund + endgame
-function approve() {
+function approve(mode?: 'glitch') {
   state.phase = 'approved';
   audio.sfx('refund'); haptics.play('success');
-  me('[photo of one (1) plated entrée]');
-  botDelayed(CHAT.approved, 900);
+  me(mode === 'glitch' ? '[photo of one (1) decorative plastic plant]' : '[photo of one (1) plated entrée]');
+  botDelayed(mode === 'glitch' ? CHAT.approvedByGlitch : CHAT.approved, 900);
   setChoices(CHAT.approvedChoices.map(c => ({
     label: c.t,
     fn: () => { me(c.t); if (c.r) botDelayed(c.r); else settings(); },

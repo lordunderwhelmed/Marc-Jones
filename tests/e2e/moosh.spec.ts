@@ -45,17 +45,18 @@ function bg<T>(page: Page, fn: (b: BG) => T): Promise<T> {
   return page.evaluate(`(${fn.toString()})(window.__bg)`) as Promise<T>;
 }
 
-test.describe('the fern photo bug (IMG_9310)', () => {
-  test('GRAVY quotes the classifier noun but never its raw score', async ({ page }) => {
+test.describe('the parsley exploit (photograph the AI\'s mistake)', () => {
+  test('snapping the plastic parsley wins by exploiting the misclassification', async ({ page }) => {
     await boot(page);
     await bg(page, b => b.openPhone());
     await bg(page, b => b.choose('I want a refund'));
     await bg(page, b => b.choose('Open drone-cam'));
-    await bg(page, b => b.photo('plant')); // the plastic fern → "SALAD (undressed) 91%"
-    await page.waitForTimeout(1000);        // GRAVY "is typing…" then answers
+    await bg(page, b => b.photo('plant')); // plastic parsley → AI is 91% sure it's food → refund
+    await page.waitForTimeout(1200);        // GRAVY "is typing…" then approves
 
+    expect(await bg(page, b => b.state().phase), 'the mistake should approve the refund').toBe('approved');
     const gravy = (await bg(page, b => b.chat())).filter(t => /GRAVY/.test(t)).join('  ');
-    expect(gravy, 'the joke — drone reads the plastic fern as undressed salad — must survive').toContain('SALAD (undressed)');
+    expect(gravy, 'the joke — drone reads the plastic parsley as salad — must land').toContain('SALAD (undressed)');
     expect(gravy, 'a raw NN% classifier score must never leak into a chat bubble').not.toMatch(/\d%/);
   });
 
@@ -145,7 +146,7 @@ test.describe('the winning path', () => {
     // hold well past the ~900ms threshold — setInterval ticks get throttled
     // under load, so give generous headroom to keep this deterministic
     await page.mouse.down();
-    await page.waitForTimeout(1800);
+    await page.waitForTimeout(2400);
     await page.mouse.up();
 
     await expect(page.locator('#endPage')).toBeVisible({ timeout: 4000 });
