@@ -1,0 +1,569 @@
+{
+  "id": "z0-2-mushroom",
+  "title": "The Mushroom",
+  "room": {
+    "w": 480,
+    "h": 216,
+    "floorY": 150,
+    "walkMinY": 166,
+    "walkMaxY": 204,
+    "blocks": [
+      {
+        "id": "wall",
+        "x": 0,
+        "y": 0,
+        "w": 480,
+        "h": 150,
+        "tint": "#2b3040",
+        "label": ""
+      },
+      {
+        "id": "floor",
+        "x": 0,
+        "y": 150,
+        "w": 480,
+        "h": 66,
+        "tint": "#1c202c",
+        "label": ""
+      },
+      {
+        "id": "window",
+        "x": 30,
+        "y": 30,
+        "w": 80,
+        "h": 70,
+        "tint": "#151a28",
+        "label": "window"
+      },
+      {
+        "id": "bed",
+        "x": 340,
+        "y": 110,
+        "w": 120,
+        "h": 46,
+        "tint": "#4a4258",
+        "label": "bed"
+      },
+      {
+        "id": "stove",
+        "x": 140,
+        "y": 84,
+        "w": 60,
+        "h": 66,
+        "tint": "#50565f",
+        "label": "stove"
+      },
+      {
+        "id": "pan",
+        "x": 152,
+        "y": 74,
+        "w": 36,
+        "h": 12,
+        "tint": "#6a6252",
+        "label": "pan"
+      },
+      {
+        "id": "kettle",
+        "x": 210,
+        "y": 96,
+        "w": 24,
+        "h": 22,
+        "tint": "#5a6a72",
+        "label": "kettle"
+      },
+      {
+        "id": "shelf",
+        "x": 250,
+        "y": 40,
+        "w": 84,
+        "h": 52,
+        "tint": "#5c4a3a",
+        "label": "medicine shelf"
+      },
+      {
+        "id": "table",
+        "x": 220,
+        "y": 126,
+        "w": 70,
+        "h": 26,
+        "tint": "#584838",
+        "label": "table"
+      },
+      {
+        "id": "phone",
+        "x": 244,
+        "y": 112,
+        "w": 16,
+        "h": 16,
+        "tint": "#7adfff",
+        "label": "phone"
+      },
+      {
+        "id": "dog",
+        "x": 96,
+        "y": 158,
+        "w": 44,
+        "h": 26,
+        "tint": "#7a6a4a",
+        "label": "Barnaby"
+      },
+      {
+        "id": "door",
+        "x": 420,
+        "y": 44,
+        "w": 44,
+        "h": 106,
+        "tint": "#3d3428",
+        "label": "door"
+      },
+      {
+        "id": "rug",
+        "x": 180,
+        "y": 170,
+        "w": 110,
+        "h": 26,
+        "tint": "#4a3a44",
+        "label": "rug"
+      }
+    ]
+  },
+  "actor": {
+    "start": [
+      310,
+      190
+    ],
+    "name": "imre"
+  },
+  "flags": {
+    "fixed": false,
+    "terminated": false
+  },
+  "goal": "terminated",
+  "onStart": [
+    {
+      "cue": "entry"
+    }
+  ],
+  "cues": {
+    "entry": {
+      "who": "the book",
+      "text": "Two-nineteen. The app was ninety-eight point seven percent sure. The mushroom was not."
+    },
+    "human": {
+      "who": "the book",
+      "text": "Nine seconds of human. That's all it took."
+    },
+    "terminate": {
+      "who": "the book",
+      "text": "He tipped the pan into the compost, thanked the dog for nothing, and left."
+    }
+  },
+  "hotspots": [
+    {
+      "id": "pan",
+      "label": "the pan",
+      "rect": [
+        148,
+        70,
+        44,
+        20
+      ],
+      "walkX": 176,
+      "examine": [
+        "The pan. The evidence. The accomplice.",
+        "It smelled amazing. That's the tragedy."
+      ],
+      "use": [
+        {
+          "if": {
+            "flag": "fixed"
+          },
+          "do": [
+            {
+              "say": "Compost. Where we both belong tonight."
+            },
+            {
+              "sfx": "pickup"
+            }
+          ]
+        },
+        {
+          "do": [
+            {
+              "say": "My stomach files a formal objection to further contact."
+            },
+            {
+              "haptic": "error"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kettle",
+      "label": "smart kettle",
+      "rect": [
+        206,
+        92,
+        32,
+        28
+      ],
+      "walkX": 226,
+      "examine": [
+        "Smart kettle. It boils when I'm predicted to want tea. We are currently not speaking.",
+        "It just boiled. Out of spite."
+      ]
+    },
+    {
+      "id": "shelf",
+      "label": "medicine shelf",
+      "rect": [
+        248,
+        36,
+        88,
+        58
+      ],
+      "walkX": 290,
+      "examine": "Vitamins-as-a-service. Expired everything. And an old insurance letter: 'reports of an ADVERSE EVENT trigger mandatory human review.' ...Huh.",
+      "use": [
+        {
+          "do": [
+            {
+              "say": "'Adverse event.' The two words a liability department fears more than fire."
+            },
+            {
+              "set": {
+                "knowPhrase": true
+              }
+            },
+            {
+              "unlock": "adverse"
+            },
+            {
+              "haptic": "pickup"
+            },
+            {
+              "sfx": "reveal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dog",
+      "label": "Barnaby",
+      "rect": [
+        92,
+        154,
+        52,
+        32
+      ],
+      "walkX": 122,
+      "examine": [
+        "Barnaby ate none of the mushrooms. He watches me with ninety-eight point seven percent smugness.",
+        "He'd have flagged the mushroom. He works for kibble, not equity."
+      ]
+    },
+    {
+      "id": "window",
+      "label": "window",
+      "rect": [
+        28,
+        28,
+        84,
+        74
+      ],
+      "walkX": 70,
+      "examine": "Dark hills. Real mushrooms out there somewhere, laughing."
+    },
+    {
+      "id": "door",
+      "label": "door",
+      "rect": [
+        418,
+        42,
+        48,
+        110
+      ],
+      "walkX": 400,
+      "examine": "It locks itself at night. For my safety. From soup, presumably."
+    },
+    {
+      "id": "rug",
+      "label": "rug",
+      "rect": [
+        178,
+        168,
+        114,
+        30
+      ],
+      "walkX": 235,
+      "examine": "A rug that ties absolutely nothing together."
+    },
+    {
+      "id": "phone",
+      "label": "phone",
+      "rect": [
+        242,
+        108,
+        22,
+        22
+      ],
+      "walkX": 252,
+      "examine": "Forageous is still open. It has added a chef's-kiss emoji to the diagnosis.",
+      "use": [
+        {
+          "do": [
+            {
+              "dialog": "funnel"
+            },
+            {
+              "haptic": "tick"
+            },
+            {
+              "sfx": "blip"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dialogs": {
+    "funnel": {
+      "tag": "FORAGEOUS⁺ CARE · after-hours triage",
+      "nodes": {
+        "start": {
+          "text": "Hi Imre! I'm SPORE, your Foraging Wellness Companion 🍄 I see tonight's Chanterelle (98.7%) went down great! How can I help?",
+          "choices": [
+            {
+              "t": "I have been poisoned.",
+              "goto": "triage"
+            },
+            {
+              "t": "Your app misidentified a mushroom.",
+              "goto": "defend"
+            },
+            {
+              "t": "Put the phone down",
+              "goto": "@close"
+            }
+          ]
+        },
+        "triage": {
+          "text": "I hear you! I've checked your wearable: heart rate elevated but *trending normal*. Discomfort after a gourmet experience is often excitement! Shall I play a digestion soundscape? 🎵",
+          "choices": [
+            {
+              "t": "Let me talk to a human.",
+              "goto": "nohuman"
+            },
+            {
+              "t": "I am ACTUALLY poisoned.",
+              "goto": "actually"
+            },
+            {
+              "id": "adverse",
+              "t": "I would like to report an ADVERSE EVENT.",
+              "locked": true,
+              "do": [
+                {
+                  "haptic": "success"
+                },
+                {
+                  "sfx": "refund"
+                }
+              ],
+              "goto": "human"
+            }
+          ]
+        },
+        "defend": {
+          "text": "Our classifier is 98.7% accurate! Which means 1.3% of forage is a surprise. Surprise is a core feature of the Forageous⁺ experience! 🍄✨",
+          "choices": [
+            {
+              "t": "The surprise is poison.",
+              "goto": "triage"
+            },
+            {
+              "t": "Put the phone down",
+              "goto": "@close"
+            }
+          ]
+        },
+        "nohuman": {
+          "text": "Humans are reserved for emergencies! Your situation is classified as: a Tuesday. Rest assured my empathy module is fully engaged. 💜",
+          "choices": [
+            {
+              "t": "This IS an emergency.",
+              "goto": "actually"
+            },
+            {
+              "id": "adverse",
+              "t": "I would like to report an ADVERSE EVENT.",
+              "locked": true,
+              "do": [
+                {
+                  "haptic": "success"
+                },
+                {
+                  "sfx": "refund"
+                }
+              ],
+              "goto": "human"
+            },
+            {
+              "t": "Put the phone down",
+              "goto": "@close"
+            }
+          ]
+        },
+        "actually": {
+          "text": "Escalation request noted and scheduled! A specialist will reach out within 3–5 business days. In the meantime: have you tried not being nervous? 🌿",
+          "choices": [
+            {
+              "t": "…Three to five business DAYS?",
+              "goto": "nohuman"
+            },
+            {
+              "id": "adverse",
+              "t": "I would like to report an ADVERSE EVENT.",
+              "locked": true,
+              "do": [
+                {
+                  "haptic": "success"
+                },
+                {
+                  "sfx": "refund"
+                }
+              ],
+              "goto": "human"
+            },
+            {
+              "t": "Put the phone down (look around the cabin)",
+              "goto": "@close"
+            }
+          ]
+        },
+        "human": {
+          "text": "— hi, this is Dana, I'm a person. Photo's a false ID, that's a jack-o'-lantern, not a chanterelle. Nausea, no neurotoxicity — fluids, you'll be fine, antiemetic's unlocked at your pharmacy, no charge. Anything else? …No? Take care, Imre.",
+          "choices": [
+            {
+              "t": "…That took nine seconds.",
+              "do": [
+                {
+                  "set": {
+                    "fixed": true
+                  }
+                },
+                {
+                  "cue": "human"
+                }
+              ],
+              "goto": "after"
+            }
+          ]
+        },
+        "after": {
+          "text": "SPORE again! 🍄 So glad we could resolve this together! I've credited you 40 Spore Points and enrolled you in Mushroom Monday!",
+          "choices": [
+            {
+              "t": "Account settings.",
+              "goto": "settings"
+            },
+            {
+              "t": "Put the phone down",
+              "goto": "@close"
+            }
+          ]
+        },
+        "settings": {
+          "text": "What would you like to do? (Most foragers choose 'nothing'! 💜)",
+          "choices": [
+            {
+              "t": "Pause foraging alerts",
+              "goto": "pause"
+            },
+            {
+              "t": "TERMINATE ACCOUNT",
+              "goto": "confirm"
+            }
+          ]
+        },
+        "pause": {
+          "text": "Paused! Un-pausing at dawn, when the mushrooms wake up. 🍄🌅",
+          "choices": [
+            {
+              "t": "TERMINATE ACCOUNT",
+              "goto": "confirm"
+            }
+          ]
+        },
+        "confirm": {
+          "text": "Terminating forfeits 40 Spore Points and your Forager Rank (Truffle Novice). Dana will miss you! (Dana will not know.) Are you sure?",
+          "choices": [
+            {
+              "t": "TERMINATE. NOW.",
+              "do": [
+                {
+                  "set": {
+                    "terminated": true
+                  }
+                },
+                {
+                  "haptic": "terminate"
+                },
+                {
+                  "sfx": "terminate"
+                },
+                {
+                  "cue": "terminate"
+                },
+                {
+                  "end": {
+                    "counter": "2",
+                    "line": "02:19. The second of 555,789. Somewhere, a dashboard hasn't noticed yet."
+                  }
+                }
+              ],
+              "goto": "@close"
+            },
+            {
+              "t": "Tell me about Spore Points",
+              "goto": "points"
+            }
+          ]
+        },
+        "points": {
+          "text": "Spore Points convert to Cap Coins, which unlock Mycelium Tiers, which earn Spore Points! It's a circle of life! 🍄",
+          "choices": [
+            {
+              "t": "TERMINATE. NOW.",
+              "do": [
+                {
+                  "set": {
+                    "terminated": true
+                  }
+                },
+                {
+                  "haptic": "terminate"
+                },
+                {
+                  "sfx": "terminate"
+                },
+                {
+                  "cue": "terminate"
+                },
+                {
+                  "end": {
+                    "counter": "2",
+                    "line": "02:19. The second of 555,789. Somewhere, a dashboard hasn't noticed yet."
+                  }
+                }
+              ],
+              "goto": "@close"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

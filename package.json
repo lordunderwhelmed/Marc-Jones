@@ -1,10 +1,11 @@
 {
   "name": "marc-jones",
   "version": "1.0.0",
-  "description": "A golden-era point-and-click adventure — Monkey Island 2 / Fate of Atlantis mood, 2026 hi-bit pixel art, modern haptics — running in browser, mobile, and desktop from one codebase. Adapted from the story \"The Big Glitch\": a playable book about the year the AI economy died of a quadrillion small errors.",
+  "description": "A golden-era point-and-click adventure \u2014 Monkey Island 2 / Fate of Atlantis mood, 2026 hi-bit pixel art, modern haptics \u2014 running in browser, mobile, and desktop from one codebase. Adapted from the story \"The Big Glitch\": a playable book about the year the AI economy died of a quadrillion small errors.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:scenes": "node tools/solve-scene.mjs src/game/scenes/*.json"
   },
   "repository": {
     "type": "git",

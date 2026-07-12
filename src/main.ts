@@ -9,6 +9,7 @@ import {
 // theme must apply before any draw calls
 const THEME = (new URLSearchParams(location.search).get('theme') || localStorage.getItem('bg-theme') || 'a').toLowerCase();
 applyTheme(THEME);
+const SCENE_SEL = (new URLSearchParams(location.search).get('scene') || localStorage.getItem('bg-scene') || 'moosh').toLowerCase();
 import { HOTSPOTS, PARSLEY, CUES, CHAT, END_LINE, HotspotDef } from './game/content';
 
 // ----------------------------------------------------------------- helpers
@@ -592,7 +593,25 @@ function bindUI() {
   phoneEl.addEventListener('click', (e) => { if (e.target === phoneEl) closePhone(); });
 }
 
-boot();
+// ---- scene routing: 'moosh' = the styled hand-built slice; anything else
+// boots the GLITCHKIT blockout renderer with that scene's JSON (ENGINE.md).
+if (SCENE_SEL === 'moosh') {
+  boot();
+  (window as any).__bg = { view: () => ({ camX, viewW }) };
+} else {
+  import('./kit/blockout').then(async ({ bootBlockout }) => {
+    const data = (await import(`./game/scenes/${SCENE_SEL}.json`)).default;
+    bootBlockout(data);
+  }).catch(() => { localStorage.removeItem('bg-scene'); location.reload(); });
+}
 
-// test/debug hook (harmless in production; used by the Playwright playthrough)
-(window as any).__bg = { view: () => ({ camX, viewW }) };
+// blockout/back toggle on the start page
+const tgl = document.getElementById('btnBlockout');
+if (tgl) {
+  tgl.textContent = SCENE_SEL === 'moosh' ? '▦ blockout playtest: The Mushroom (no art)' : '← back to the kitchen (styled)';
+  tgl.addEventListener('click', () => {
+    if (SCENE_SEL === 'moosh') localStorage.setItem('bg-scene', 'mushroom');
+    else localStorage.removeItem('bg-scene');
+    location.reload();
+  });
+}
