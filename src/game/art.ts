@@ -9,15 +9,15 @@ export const ROOMW = 560, H = 216;
 export const FLOOR_Y = 150;
 export const WALK_MIN_Y = 166, WALK_MAX_Y = 204;
 
-export const PAL = {
+const BASE = {
   // grounds
   shadow: '#0b0f0a', wallFar: '#161d12', wallNear: '#232517', wallWash: '#3d3018',
-  floorD: '#0a0d08', floorL: '#26241458', board: '#1c1c0f',
-  // sodium light
+  floorD: '#0a0d08', floorLit: '#242414', board: '#1c1c0f',
+  // key light (sodium amber by default)
   amber: '#ffb14a', amberDeep: '#b06a20', amberDim: '#6e451a',
-  // the one cold thing
+  // the one odd-temperature thing: the screen
   phoneCyan: '#7adfff', phoneCyanDeep: '#2e6a8a',
-  // sky is light-polluted, not blue
+  // sky
   skyHi: '#1f1608', skyLo: '#5a3512', cityInk: '#12100a', cityLit: '#e8a04c', citySalmon: '#ff8a5e',
   // props
   metal: '#8a7a54', metalD: '#4a4430', hatch: '#3c3a24', hatchD: '#26241a',
@@ -28,8 +28,67 @@ export const PAL = {
   pot: '#8a4a2e', potD: '#5c2f1c', leaf: '#4a6a2e', leafL: '#7a9a44', parsley: '#a4c85e',
   clockFace: '#d8c090', clockD: '#8a7350',
   moosh: '#7a7f63', mooshL: '#a3a882', mooshD: '#52563e', mooshPink: '#c98a80',
-  glassNight: '#160f06',
+  // glow plumbing
+  glowRGB: '255,177,74',
 };
+export const PAL: typeof BASE = { ...BASE };
+
+// Per-theme dynamic-light config consumed by main.ts (OLED-grade: additive
+// blended glows over near-black grounds).
+export const GLOW = {
+  lamp: 0xffb14a, lampA: 0.34, phone: 0x7adfff, phoneA: 0.6,
+  neon: 0xff8a5e, neonA: 0.5, rain: 0xd8b080, mote: 0xffb14a,
+};
+
+// A: Sodium (default) — amber streetlight, green-black shadow, cyan phone.
+// B: Thimbleweed Twilight — saturated violet night, magenta neon, green phone.
+// C: Petrol & Ember — cold petrol world, salmon neon, WARM gold phone (the
+//    machine glows seductive — the thesis inverted on purpose, for contrast).
+const THEMES: Record<string, { pal: Partial<typeof BASE>; glow: Partial<typeof GLOW> }> = {
+  a: { pal: {}, glow: {} },
+  b: {
+    pal: {
+      shadow: '#0a0714', wallFar: '#151028', wallNear: '#241a40', wallWash: '#3a2560',
+      floorD: '#07050f', floorLit: '#1e1836', board: '#241d42',
+      amber: '#e86aff', amberDeep: '#8a3aa8', amberDim: '#5a2a70',
+      phoneCyan: '#7dff9e', phoneCyanDeep: '#2a8a4a',
+      skyHi: '#0a0618', skyLo: '#3a1a5a', cityInk: '#0d0a1a', cityLit: '#ff9ee8', citySalmon: '#ff4fd8',
+      metal: '#8a84b0', metalD: '#4a4470', hatch: '#332e50', hatchD: '#221d3a',
+      fridge: '#4a4468', fridgeL: '#7a74a0', fridgeD: '#332e50',
+      counter: '#4a3a6a', counterD: '#332552', cabinet: '#291e45', cabinetD: '#1c1432',
+      wood: '#5a3a64', woodL: '#7a5288', woodD: '#3d2545', leg: '#2a1830',
+      poster: '#cfb8d8', posterInk: '#3a2245', posterRed: '#ff4fd8',
+      pot: '#8a3a6a', potD: '#5c2548', leaf: '#3a7a68', leafL: '#5ea895', parsley: '#7dffc8',
+      clockFace: '#d8c8e8', clockD: '#8a7ba0',
+      glowRGB: '232,106,255',
+    },
+    glow: { lamp: 0xe86aff, lampA: 0.4, phone: 0x7dff9e, phoneA: 0.65, neon: 0xff4fd8, neonA: 0.65, rain: 0xb8a0e8, mote: 0xe86aff },
+  },
+  c: {
+    pal: {
+      shadow: '#040a0c', wallFar: '#0c181a', wallNear: '#14262a', wallWash: '#1e3a40',
+      floorD: '#04090a', floorLit: '#122226', board: '#0f1c20',
+      amber: '#5eeaff', amberDeep: '#2a7a90', amberDim: '#1a4a58',
+      phoneCyan: '#ffd25e', phoneCyanDeep: '#8a6a1e',
+      skyHi: '#02080a', skyLo: '#0e3038', cityInk: '#050d10', cityLit: '#ffb85e', citySalmon: '#ff5e4a',
+      metal: '#7a98a0', metalD: '#3d565c', hatch: '#26383d', hatchD: '#182529',
+      fridge: '#3a5258', fridgeL: '#6a8a90', fridgeD: '#26383d',
+      counter: '#3a545a', counterD: '#26383d', cabinet: '#1c2e33', cabinetD: '#122024',
+      wood: '#4a4238', woodL: '#68584a', woodD: '#2e2a22', leg: '#1e1a14',
+      poster: '#b0c4c9', posterInk: '#22363a', posterRed: '#ff5e4a',
+      pot: '#6a4a3a', potD: '#452e24', leaf: '#3a7a55', leafL: '#5aa87a', parsley: '#8ae8a8',
+      clockFace: '#c8d8dc', clockD: '#7a949a',
+      glowRGB: '94,234,255',
+    },
+    glow: { lamp: 0x5eeaff, lampA: 0.3, phone: 0xffd25e, phoneA: 0.7, neon: 0xff5e4a, neonA: 0.6, rain: 0x8ad8e8, mote: 0x5eeaff },
+  },
+};
+
+export function applyTheme(name: string) {
+  const t = THEMES[name] ?? THEMES.a;
+  Object.assign(PAL, BASE, t.pal);
+  Object.assign(GLOW, { lamp: 0xffb14a, lampA: 0.34, phone: 0x7adfff, phoneA: 0.6, neon: 0xff8a5e, neonA: 0.5, rain: 0xd8b080, mote: 0xffb14a }, t.glow);
+}
 
 const BAYER = [
   [0, 8, 2, 10],
@@ -76,7 +135,7 @@ export function drawCity(): HTMLCanvasElement {
   c.fillStyle = PAL.citySalmon;
   [[34, 32], [100, 30], [146, 44]].forEach(([a, b]) => c.fillRect(a, 100 - b, 2, 3));
   // the sodium streetlamp itself, just off-frame low: a hot smear
-  dither(c, 0, 78, 160, 22, 'rgba(255,177,74,0.28)', 'rgba(255,177,74,0)');
+  dither(c, 0, 78, 160, 22, `rgba(${PAL.glowRGB},0.28)`, `rgba(${PAL.glowRGB},0)`);
   // NOODL∞ sign on the opposite roof — salmon, half-dead
   c.fillStyle = '#7a3520'; c.fillRect(36, 18, 58, 13);
   c.fillStyle = PAL.citySalmon; c.font = 'bold 8px monospace'; c.textBaseline = 'top';
@@ -84,7 +143,7 @@ export function drawCity(): HTMLCanvasElement {
   // the infinity sign, drawn by hand because neon benders don't do fonts
   c.strokeStyle = PAL.citySalmon; c.lineWidth = 1;
   c.strokeRect(74.5, 22.5, 4, 4); c.strokeRect(79.5, 22.5, 4, 4);
-  c.fillStyle = 'rgba(255,138,94,0.30)'; c.fillRect(34, 16, 62, 17);
+  c.fillStyle = `rgba(${PAL.glowRGB},0.30)`; c.fillRect(34, 16, 62, 17);
   return cv;
 }
 
@@ -99,7 +158,7 @@ export function drawRoom(): HTMLCanvasElement {
   c.fillStyle = PAL.shadow; c.fillRect(0, FLOOR_Y - 3, ROOMW, 3);
 
   // floor
-  dither(c, 0, FLOOR_Y, ROOMW, H - FLOOR_Y, '#242414', PAL.floorD);
+  dither(c, 0, FLOOR_Y, ROOMW, H - FLOOR_Y, PAL.floorLit, PAL.floorD);
   c.fillStyle = PAL.board;
   for (let i = 0; i < 13; i++) {
     const t = i / 12;
@@ -146,7 +205,7 @@ export function drawRoom(): HTMLCanvasElement {
   // ---- poster (240..290, 36..98)
   c.fillStyle = PAL.posterInk; c.fillRect(238, 34, 54, 68);
   c.fillStyle = PAL.poster; c.fillRect(240, 36, 50, 64);
-  dither(c, 240, 36, 50, 20, 'rgba(255,177,74,0.18)', 'rgba(255,177,74,0)');
+  dither(c, 240, 36, 50, 20, `rgba(${PAL.glowRGB},0.18)`, `rgba(${PAL.glowRGB},0)`);
   c.fillStyle = PAL.posterRed; c.font = '7px monospace';
   c.fillText('EAT.', 250, 44); c.fillText('RATE.', 250, 56); c.fillText('REPEAT.', 246, 68);
   c.fillStyle = PAL.posterInk; c.font = '5px monospace'; c.fillText('nourly+', 252, 86);
@@ -212,19 +271,19 @@ export function drawRoom(): HTMLCanvasElement {
 // --------------------------------------------- foreground plane (parallax 1.18)
 export function drawForeground(): HTMLCanvasElement {
   const [cv, c] = canvas(ROOMW, H);
-  const ink = '#050703', rim = 'rgba(255,177,74,0.35)';
+  const ink = '#050703', rim = `rgba(${PAL.glowRGB},0.35)`;
   // stack of Nourly return crates, bottom-left
   c.fillStyle = ink;
   c.fillRect(-10, 158, 96, 60); c.fillRect(4, 132, 70, 30); c.fillRect(14, 112, 46, 24);
   c.fillStyle = rim;
   c.fillRect(4, 132, 70, 1); c.fillRect(14, 112, 46, 1); c.fillRect(72, 133, 2, 28);
-  c.fillStyle = 'rgba(255,177,74,0.16)'; c.font = '6px monospace'; c.textBaseline = 'top';
+  c.fillStyle = `rgba(${PAL.glowRGB},0.16)`; c.font = '6px monospace'; c.textBaseline = 'top';
   c.fillText('RETURN', 20, 118); c.fillText('TO SENDER', 12, 140);
   // hanging cable + bare bulb (dead), top center-left
-  c.fillStyle = ink; c.fillRect(250, 0, 2, 34);
-  c.fillRect(246, 34, 10, 12);
-  c.fillStyle = rim; c.fillRect(246, 34, 10, 1);
-  c.fillStyle = 'rgba(255,177,74,0.5)'; c.fillRect(250, 42, 2, 2);
+  c.fillStyle = ink; c.fillRect(316, 0, 2, 30);
+  c.fillRect(312, 30, 10, 12);
+  c.fillStyle = rim; c.fillRect(312, 30, 10, 1);
+  c.fillStyle = `rgba(${PAL.glowRGB},0.5)`; c.fillRect(316, 38, 2, 2);
   return cv;
 }
 
@@ -237,7 +296,7 @@ export function drawShaft(): HTMLCanvasElement {
     const x0 = 60 - t * 60, wdt = 110 + t * 80;
     for (let i = 0; i < wdt; i += 1) {
       if ((BAYER[j & 3][(i + j) & 3]) > 9 + t * 5.5) continue;
-      c.fillStyle = `rgba(255,177,74,${0.16 * (1 - t * 0.75)})`;
+      c.fillStyle = `rgba(${PAL.glowRGB},${0.16 * (1 - t * 0.75)})`;
       c.fillRect((x0 + i) | 0, j, 1, 1);
     }
   }

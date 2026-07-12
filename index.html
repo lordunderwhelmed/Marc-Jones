@@ -83,6 +83,12 @@
     color:var(--paper); font-family:Georgia,serif; font-size:17px; font-style:italic; }
   .page .go:active { background:#4a3a20; }
   .page .tiny { position:absolute; bottom:calc(14px + env(safe-area-inset-bottom)); font-size:11px; color:#6e5a34; font-style:italic; }
+  #themes { margin-top:26px; display:flex; gap:10px; }
+  .themeBtn { display:flex; align-items:center; gap:8px; padding:9px 14px; border-radius:3px;
+    border:1px solid #3a3020; background:rgba(20,18,10,.6); color:#b0a486; font-family:Georgia,serif;
+    font-size:13px; font-style:italic; }
+  .themeBtn .sw { width:16px; height:16px; border-radius:4px; display:inline-block; }
+  .themeBtn.sel { border-color:var(--glow); color:var(--paper); }
   #endPage { display:none; }
   #counterBig { font-family:'Courier New',monospace; font-size:clamp(40px,10vw,84px); color:#ff8a5e; letter-spacing:3px; }
   button { cursor:pointer; }
@@ -124,6 +130,11 @@
     <div class="sub">a playable book · chapter zero, page one</div>
     <div class="sub" style="margin-top:26px">02:07 am. Somewhere, it is raining.<br/>Somewhere, dinner has arrived.</div>
     <button class="go" id="btnStart">open the book</button>
+    <div id="themes">
+      <button class="themeBtn" data-theme="a"><span class="sw" style="background:linear-gradient(135deg,#ffb14a,#161d12)"></span>sodium</button>
+      <button class="themeBtn" data-theme="b"><span class="sw" style="background:linear-gradient(135deg,#ff4fd8,#151028)"></span>twilight</button>
+      <button class="themeBtn" data-theme="c"><span class="sw" style="background:linear-gradient(135deg,#5eeaff,#0c181a)"></span>petrol</button>
+    </div>
     <div class="tiny">100% manual · vertical slice</div>
   </div>
 

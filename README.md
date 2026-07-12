@@ -18,6 +18,7 @@ book about the year the AI economy died of a quadrillion small errors.
 | [`story/scripts/intro-narration.md`](story/scripts/intro-narration.md) | Narrator VO script v1 with recording conventions (author-narrated) |
 | [`story/COMEDY.md`](story/COMEDY.md) | The Comedy Bible: enforced writing rules for jokes, narrator, examine layer, puzzle-as-joke, easter egg tiers |
 | [`VERTICAL_SLICE.md`](VERTICAL_SLICE.md) | The engineering paradigm: "The Moosh" slice spec, acceptance criteria, build order |
+| [`story/SCENES.md`](story/SCENES.md) | Scene bible: scenes 1–20 specified engine-independently (Chapter Zero + Chapter One) |
 
 ## Status
 

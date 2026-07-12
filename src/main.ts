@@ -2,9 +2,13 @@ import { Application, Container, Sprite, Texture, Graphics } from 'pixi.js';
 import { haptics } from './engine/haptics';
 import { audio } from './engine/audio';
 import {
-  ROOMW, H, WALK_MIN_Y, WALK_MAX_Y, WIN,
+  ROOMW, H, WALK_MIN_Y, WALK_MAX_Y, WIN, GLOW, applyTheme,
   drawRoom, drawCity, drawForeground, drawShaft, drawPlant, drawMoosh, drawZosia, drawGlow,
 } from './game/art';
+
+// theme must apply before any draw calls
+const THEME = (new URLSearchParams(location.search).get('theme') || localStorage.getItem('bg-theme') || 'a').toLowerCase();
+applyTheme(THEME);
 import { HOTSPOTS, PARSLEY, CUES, CHAT, END_LINE, HotspotDef } from './game/content';
 
 // ----------------------------------------------------------------- helpers
@@ -38,7 +42,7 @@ const world = new Container();
 let citySpr: Sprite, fgSpr: Sprite, shaftSpr: Sprite;
 let zosia: Sprite, plantSpr: Sprite, mooshSpr: Sprite;
 let zosiaFrames: Texture[] = [];
-let phoneGlow: Sprite, lampGlow: Sprite;
+let phoneGlow: Sprite, lampGlow: Sprite, neonGlow: Sprite;
 let rainG: Graphics, motesG: Graphics, revealG: Graphics;
 
 const ZSCALE = 0.2; // 100×210 smooth frames → 20×42 world units
@@ -46,7 +50,7 @@ const Z = { x: 280, y: 190, tx: 280, ty: 190, walking: false, flip: false, frame
 let queuedAction: (() => void) | null = null;
 let lastInput = performance.now();
 let idleShown = false;
-let camFocusMoosh = false;
+let camFollow: 'zosia' | 'moosh' | 'free' = 'zosia';
 
 // dust motes in the sodium shaft
 const MOTES = Array.from({ length: 14 }, (_, i) => ({
@@ -66,18 +70,25 @@ async function boot() {
   world.addChild(new Sprite(tex(drawRoom())));
 
   const glowT = tex(drawGlow(64), true);
-  lampGlow = new Sprite(glowT); lampGlow.tint = 0xffb14a; lampGlow.alpha = 0.3;
-  lampGlow.width = 150; lampGlow.height = 110;
-  lampGlow.position.set(WIN.x + WIN.w / 2 - 75, WIN.y + WIN.h / 2 - 50);
+  lampGlow = new Sprite(glowT); lampGlow.tint = GLOW.lamp; lampGlow.alpha = GLOW.lampA;
+  lampGlow.blendMode = 'add';
+  lampGlow.width = 190; lampGlow.height = 140;
+  lampGlow.position.set(WIN.x + WIN.w / 2 - 95, WIN.y + WIN.h / 2 - 62);
   world.addChild(lampGlow);
+
+  neonGlow = new Sprite(glowT); neonGlow.tint = GLOW.neon; neonGlow.alpha = GLOW.neonA;
+  neonGlow.blendMode = 'add';
+  neonGlow.width = 84; neonGlow.height = 40;
+  world.addChild(neonGlow);
 
   shaftSpr = new Sprite(tex(drawShaft()));
   shaftSpr.position.set(WIN.x - 60, WIN.y + WIN.h - 6);
   world.addChild(shaftSpr);
 
-  phoneGlow = new Sprite(glowT); phoneGlow.tint = 0x7adfff; phoneGlow.alpha = 0.5;
-  phoneGlow.width = 68; phoneGlow.height = 54;
-  phoneGlow.position.set(393 - 34, 133 - 27);
+  phoneGlow = new Sprite(glowT); phoneGlow.tint = GLOW.phone; phoneGlow.alpha = GLOW.phoneA;
+  phoneGlow.blendMode = 'add';
+  phoneGlow.width = 88; phoneGlow.height = 68;
+  phoneGlow.position.set(393 - 44, 133 - 34);
   world.addChild(phoneGlow);
 
   rainG = new Graphics(); world.addChild(rainG);
@@ -129,7 +140,8 @@ let t = 0;
 function tick(ticker: { deltaMS: number }) {
   const dt = ticker.deltaMS / 1000; t += dt;
 
-  focusCam(camFocusMoosh ? 352 : Z.x);
+  if (camFollow === 'moosh') focusCam(352);
+  else if (camFollow === 'zosia') focusCam(Z.x);
   camX += (camTargetX - camX) * Math.min(1, dt * 5);
 
   // parallax: city drags behind (0.85), room 1.0, foreground leads (1.18)
@@ -164,8 +176,10 @@ function tick(ticker: { deltaMS: number }) {
   mooshSpr.scale.y = 1 + Math.sin(t * 2.1) * 0.03;
   mooshSpr.scale.x = 1 - Math.sin(t * 2.1) * 0.02;
 
-  phoneGlow.alpha = 0.4 + Math.sin(t * 1.7) * 0.1;
-  lampGlow.alpha = Math.random() < 0.006 ? 0.16 : 0.28 + Math.sin(t * 0.7) * 0.04; // sodium hum
+  phoneGlow.alpha = GLOW.phoneA - 0.1 + Math.sin(t * 1.7) * 0.1;
+  lampGlow.alpha = Math.random() < 0.006 ? GLOW.lampA * 0.5 : GLOW.lampA + Math.sin(t * 0.7) * 0.05; // lamp hum
+  neonGlow.position.set(WIN.x - 30 + cx * 0.15 + 24, WIN.y + 4);
+  neonGlow.alpha = Math.random() < 0.012 ? GLOW.neonA * 0.35 : GLOW.neonA + Math.sin(t * 2.3) * 0.07; // dying neon
 
   // rain behind the glass
   rainG.clear();
@@ -173,7 +187,7 @@ function tick(ticker: { deltaMS: number }) {
     const seed = i * 41.3;
     const rx = WIN.x + 2 + ((seed * 13 + t * 55 * (0.7 + (i % 3) * 0.2)) % (WIN.w - 4));
     const ry = WIN.y + 2 + ((seed * 7 + t * 120 * (0.8 + (i % 4) * 0.15)) % (WIN.h - 6));
-    rainG.moveTo(rx, ry).lineTo(rx - 1.5, ry + 5).stroke({ color: 0xd8b080, alpha: 0.3, width: 1 });
+    rainG.moveTo(rx, ry).lineTo(rx - 1.5, ry + 5).stroke({ color: GLOW.rain, alpha: 0.3, width: 1 });
   }
 
   // dust motes rising through the shaft
@@ -182,7 +196,7 @@ function tick(ticker: { deltaMS: number }) {
     const my = 205 - ((m.y + t * m.v) % 92);
     const mx = m.x + Math.sin(t * 0.6 + m.ph) * 3 - (205 - my) * 0.35;
     const a = 0.12 + 0.1 * Math.sin(t * 1.3 + m.ph);
-    motesG.rect(mx, my, 1, 1).fill({ color: 0xffb14a, alpha: Math.max(0.04, a) });
+    motesG.rect(mx, my, 1, 1).fill({ color: GLOW.mote, alpha: Math.max(0.04, a) });
   }
 
   if (!idleShown && performance.now() - lastInput > 60000 && state.phase !== 'done') {
@@ -194,6 +208,7 @@ function tick(ticker: { deltaMS: number }) {
 function bindInput() {
   let downAt = 0, downX = 0, downY = 0, longFired = false, lpTimer: number | null = null;
   let lastTapTime = 0, lastTapHs: string | null = null;
+  let isDown = false, downClientX = 0, panBase = 0, camDragging = false;
 
   const toWorld = (e: PointerEvent) => {
     const r = app.canvas.getBoundingClientRect();
@@ -203,7 +218,9 @@ function bindInput() {
   app.canvas.addEventListener('pointerdown', (e) => {
     lastInput = performance.now();
     downAt = performance.now(); longFired = false;
+    isDown = true; downClientX = e.clientX; panBase = camTargetX; camDragging = false;
     const p = toWorld(e); downX = p.x; downY = p.y;
+    if (camMode) return; // in drone-cam: drag pans, tap classifies — no long-press
     lpTimer = window.setTimeout(() => {
       longFired = true;
       const hs = hitTest(downX, downY);
@@ -211,11 +228,16 @@ function bindInput() {
     }, 480);
   });
   app.canvas.addEventListener('pointerup', (e) => {
+    isDown = false;
     if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; }
     if (longFired) return;
+    if (camMode) {
+      if (!camDragging) { const p = toWorld(e); camTap(p.x, p.y); }
+      camDragging = false;
+      return;
+    }
     if (performance.now() - downAt > 480) return;
     const p = toWorld(e);
-    if (camMode) { camTap(p.x, p.y); return; }
     const hs = hitTest(p.x, p.y);
     const now = performance.now();
     const doubleTap = !!hs && lastTapHs === hs.id && now - lastTapTime < 350;
@@ -228,6 +250,19 @@ function bindInput() {
     }
   });
   app.canvas.addEventListener('pointermove', (e) => {
+    if (camMode && isDown) {
+      const r = app.canvas.getBoundingClientRect();
+      const dxWorld = (e.clientX - downClientX) / (r.width / viewW);
+      if (Math.abs(dxWorld) > 4) {
+        camDragging = true;
+        camFollow = 'free';                       // free look while framing the shot
+        camTargetX = panBase - dxWorld;
+        clampCam();
+        camChip?.remove(); camChip = null;         // stale label would mislead the shutter
+        camFocusId = null;
+      }
+      return;
+    }
     const p = toWorld(e);
     if (Math.hypot(p.x - downX, p.y - downY) > 6 && lpTimer) { clearTimeout(lpTimer); lpTimer = null; }
   });
@@ -410,11 +445,11 @@ function openCam() {
   camMode = true; camFocusId = null;
   $('cam').classList.add('show');
   document.body.classList.add('cammode');
-  camFocusMoosh = true;
+  camFollow = 'moosh';
   haptics.play('tick');
 }
 function closeCam() {
-  camMode = false; camFocusMoosh = false;
+  camMode = false; camFollow = 'zosia';
   $('cam').classList.remove('show');
   document.body.classList.remove('cammode');
   camChip?.remove(); camChip = null;
@@ -529,6 +564,16 @@ function terminate() {
 
 // ---------------------------------------------------------------------- UI
 function bindUI() {
+  document.querySelectorAll('.themeBtn').forEach((b) => {
+    const el = b as HTMLElement;
+    if (el.dataset.theme === THEME) el.classList.add('sel');
+    el.addEventListener('click', () => {
+      if (el.dataset.theme === THEME) return;
+      localStorage.setItem('bg-theme', el.dataset.theme!);
+      const u = new URL(location.href); u.searchParams.delete('theme');
+      location.href = u.toString();
+    });
+  });
   $('btnStart').addEventListener('click', () => {
     audio.unlock(); audio.sfx('page'); haptics.play('page');
     $('startPage').style.display = 'none';
