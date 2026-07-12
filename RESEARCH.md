@@ -259,6 +259,133 @@ argument for keeping Capacitor primary on mobile.
   store assets need no reframing.** The clip camera becomes a zoom/pan
   director over the same vertical composition.
 
+## 6. Comedy, irony, subtlety & easter eggs — craft findings
+
+*Actionable distillation for this game: `story/COMEDY.md`. Condensed sourced
+findings below.*
+
+### The LucasArts school
+- Gilbert: adventure comedy exists because the verbs are absurd — "you are
+  asking players to do weird things… stealing everything they see… wrap
+  that in humor and it's easier to digest." Development is "improv
+  development": try weird things, get funny responses.
+- **Failure responses are the main joke vehicle.** DOTT's method: playtest,
+  ask testers *what they tried that didn't work*, then author custom funny
+  responses to those exact attempts (which double as soft hints). Ardai on
+  DOTT: "The player is never, ever punished for doing something funny…
+  doing funny things is the whole point."
+- Schafer (DICE 2012): "If you don't have anything funny to say about a
+  situation, the player will realize something's fake." And: "Humor is a
+  tool to cover up the fact that this is not a solvable problem" — when a
+  scene can't be earned dramatically in the space available, make the
+  impossibility the joke ("plunder bunny"). Don't kill dumb ideas early
+  (the three-headed monkey survived that way).
+- Grossman: "Your job is not to make yourself feel clever, it's to make the
+  player feel clever." Lampshade implausible puzzle logic in-game — an
+  admitted flaw becomes a joke. RtMI: "make the player part of the humor" —
+  the *goal itself* must be funny; examine text is the protagonist's inner
+  monologue ("you are Guybrush's frontal lobe"), not neutral narration.
+  Callbacks are rationed — repeat old jokes "only very deliberately."
+- GDC 2010 "Make 'Em Laugh" (Schafer/Pratchett/Vanaman): comedy lowers
+  defenses "then hits you with something emotional"; contrast makes jokes
+  land; running gags need spine-level foreshadowing; put humor where the
+  drama is.
+- Douglas Adams (Hitchhiker's): medium-native jokes — the parser lies, the
+  inventory holds "no tea," system messages become canon. Counter-lesson
+  (icecano 40th-anniversary analysis): jokes that tax the player's *inputs*
+  rather than attention curdle into irritation; test comedy in the hands.
+
+### Timing & repetition systems
+- Player controls pacing → timing = engineering the silence before the
+  response. Pugh (Stanley Parable GDC): design "quiet spaces" so
+  anticipation builds (the broom closet works because of the vacuum).
+- Wolpaw/L4D: condition-gate lines narrowly so each context feels authored;
+  never let a gag be the fallback bark. Bastion: reactive narrator never
+  repeats gags, lines short, playtest till the narrator "keeps up." Hades:
+  repetition solved by authored volume + priority queues (21k lines);
+  characters acknowledge the repetition itself.
+- **Wolpaw's TTS lesson → GLaDOS**: flat, unperformed delivery survives
+  repetition far better than performed "funny" delivery. The straight-man
+  world: GLaDOS is a computer voice talking like a passive-aggressive
+  *person*; the delivery never winks. Portal 2 playtests found a measurable
+  cruelty ceiling — testers rejected "too vicious," retuned to wounded
+  passive-aggression.
+- Stanley Parable's deep structure: the player supplies intent, the game
+  supplies wit in response — enumerate defiance and reward each branch
+  ("improv theater with a robot comedian funnier than you").
+
+### Modern case studies
+- Frog Detective (Bruxner, GDC 2019): find comedy in the ordinary; dry,
+  low-stakes dialogue that never signals "joke incoming"; play the genre
+  straight while the content is trivial.
+- Undertale: Fox's test is purely empirical — does he laugh, do friends
+  laugh; humor "pieces out the disturbing bits"; mercy-as-jokes (sparing =
+  humoring enemies).
+- Untitled Goose Game: worked from a literal catalog of slapstick clichés;
+  a town of straight men with huffy dignity; the to-do list phrased as
+  pranks makes the goal itself funny.
+- Thank Goodness You're Here (2024): joke-first pipeline — scenarios are
+  "teased out of gags," a gag becomes a scene only if it's still funny a
+  week later; introduce a gag and drop it before it outstays its welcome;
+  they *cut puzzle depth* when it fought the comedy.
+- Disco Elysium: 24 skills = 24 ironic voices; register collision as
+  comedy engine; "leave nothing in store" — failure-check text is often
+  better written than success text; the game pays you for failing.
+
+### Easter eggs & subtlety
+- Easter eggs = social contract rewarding attention; **optimal obscurity is
+  findable by the community, not by every individual** — communal solving
+  is free marketing.
+- Animal Well's explicit layer architecture: L1 everyone finishes; L2 for
+  secret-hunters; L3 ARG-grade (per-player unique tiles, ~50 players must
+  pool). Tunic (Shouldice GDC 2023): the best secret is retroactive — "it
+  was here the whole time" — which is exactly the "of course!" of a joke.
+  Fez's monolith: unsolved-by-design generates mystique *and* permanent
+  anticlimax (caution).
+- Thimbleweed Park shipped a **"turn off annoying in-jokes" toggle** —
+  reference density has a ceiling for non-cognoscenti; make it a knob.
+- Pratchett's footnotes → game equivalents: examine text, narrator asides,
+  item descriptions, achievement names, UI copy — every *optionally read*
+  channel is a footnote slot. Adams' digressive apparatus → the UI as
+  unreliable narrator (attention-tax only, never input-tax).
+
+### Puzzle-as-joke (formalized)
+- Karhulahti, "Punchline Behind the Hotspot" (J. Popular Culture 2021):
+  puzzle insight and joke punchline share machinery — both mislead to
+  produce a cognitive shift. Gilbert's target reaction is the punchline
+  reaction: "Of course, why didn't I think of that sooner!"
+- DOTT's cartoon logic is *taught*: time-travel cause/effect established
+  with simple cases before absurd ones; every puzzle passed "How is the
+  player supposed to figure this out?"
+- Calibration knobs: step count; clue-to-use distance; signposting strength
+  (funny failures = graduated hints); parallel open puzzles; author
+  responses to the playtest "what did you try?" list.
+- Schafer rereading the Grim Fandango puzzle doc: "some of them puzzles
+  were nuts. Obscure. Mean, even." (The doc is archived — 72pp of the whole
+  game as prose: archive.org/details/gf_doc.)
+- Insult sword-fighting = purest puzzle-joke fusion: collecting insults is
+  collecting setups/punchlines; the solve is delivering the right punchline.
+
+### Narrator VO pipelines
+- Bastion: never interrupt play; short reactive lines; recorded in a closet
+  by a 4-person pipeline (writer → editor → composer-as-voice-director →
+  implementation); playtest until the narrator keeps up; never repeat gags.
+- Stanley Parable: unknown pro VO found via online casting; recorded
+  remotely, **iteratively against the build over 2–3 years** — comedy
+  timing is fixed in implementation, not the booth. Script format: per
+  choice, write the compliance line, the defiance line, and the escalation
+  chain for continued defiance.
+- Distilled rules: short reactive lines, long digressions only when the
+  player chooses to stand still; deadpan survives repetition; condition-
+  gate everything; record in passes against the build.
+
+Key sources: grumpygamer.com/why_adventure_games_suck · filfre.net/2019/06/day-of-the-tentacle ·
+gdcvault.com/play/1022057 (Pugh) · gdcvault.com/play/1025651 (Bruxner) ·
+gdcvault.com/play/1026975 (Hades) · gdcvault.com/play/1029384 (Tunic) ·
+gdcvault.com/play/1012287 (Make 'Em Laugh) · archive.org/details/gf_doc ·
+onlinelibrary.wiley.com/doi/10.1111/jpcu.13011 · supergiantgames.com/blog/in-depth-writing-bastion ·
+mixnmojo.com RtMI interview · Action Talks #14 (Gilbert on joke construction).
+
 Full source URLs are preserved in the session research transcripts; key ones:
 grumpygamer.com/why_adventure_games_suck · grumpygamer.com/puzzle_dependency_charts ·
 dukope.com/devlogs/obra-dinn/tig-32 · dpadstudio.com/Blog/postHibit.html ·

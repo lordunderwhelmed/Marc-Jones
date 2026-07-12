@@ -17,6 +17,12 @@ deadpan and let the pixel art be the punchline.
 take "wry" (eyebrow raised), one take "tired" (2am honesty). We pick in the
 edit; reactive narration systems live on alternates.
 
+**Two rules from the craft research (`story/COMEDY.md` §2):** deadpan
+survives repetition — performed "funny" delivery decays fastest, so when
+torn, ship the flat take. And comedy timing is fixed in implementation, not
+the booth: expect small pickup sessions against the running build rather
+than one perfect recording day (the Stanley Parable / Bastion method).
+
 ## Recording conventions
 
 - Slate each cue aloud: "N zero zero one, take two" — the pipeline splits on
