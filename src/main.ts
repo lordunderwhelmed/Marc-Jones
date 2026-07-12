@@ -8,7 +8,8 @@ import {
 } from './game/art';
 
 // theme must apply before any draw calls
-const THEME = (new URLSearchParams(location.search).get('theme') || localStorage.getItem('bg-theme') || 'a').toLowerCase();
+// Locked to the original sodium/amber look. (?theme= still works for dev.)
+const THEME = (new URLSearchParams(location.search).get('theme') || 'a').toLowerCase();
 applyTheme(THEME);
 const SCENE_SEL = (new URLSearchParams(location.search).get('scene') || localStorage.getItem('bg-scene') || 'moosh').toLowerCase();
 import { HOTSPOTS, PARSLEY, CUES, CHAT, END_LINE, DEPTH, HotspotDef } from './game/content';
