@@ -224,12 +224,20 @@ no menus, no cursor, no UI; the game re-renders the moment clean at
 1080×1920 with fast cuts (lead-in beats → the solve → reaction → title
 card). Mechanism: deterministic replay (the engine logs inputs/state
 deltas; the moment is re-simulated offscreen with an authored "director"
-cut list per moment type), encoded in-browser via WebCodecs (fallbacks:
-MediaRecorder / native plugin under Capacitor), one-tap native share sheet.
-Target duration 8–15s; safe areas for TikTok/Reels/Shorts overlays;
-watermarked with the book's colophon. Tagged moment types: puzzle solves,
-tedium-boss kills, TERMINATE presses, chapter cards. Sharing is always
-player-initiated — auto-capture, manual publish.
+cut list per moment type — *authored* camera beats, the Gran Turismo
+lesson: fixed pre-composed shots beat algorithmic cameras), encoded
+in-browser via WebCodecs + Mediabunny in a Web Worker, one-tap share via
+the native sheet, camera-roll save, and TikTok Share Kit. Target 8–15s
+with the hook in the first 3s (open at the payoff, not the setup: 2–4s
+lead-in → solve with push-in → reaction beat → end card); cross-platform
+safe zone ~900×1400 centered on the 1080×1920 frame; small colophon
+wordmark. Clips are **quality-gated and pre-generated** (PUBG Mobile
+pattern: previewed ready-to-share at the moment screen, opt-out not
+opt-in) — but publishing is always player-initiated. Tagged moment types:
+puzzle solves, tedium-boss kills, TERMINATE presses, chapter cards.
+Because the game is portrait-first, the clip camera is just a zoom/pan
+director over compositions that are already 9:16-aware — vertical clips
+come nearly free.
 
 ### 5.4 Narration as a pillar
 
@@ -262,10 +270,18 @@ follows (character position + active hotspot weighting). Portrait layout:
 scene viewport on top ~55–60% of the screen, the **Book panel** (dialogue,
 inventory, journal margin-notes) filling the bottom thumb zone — dialogue
 and critical buttons always land where a thumb rests. Landscape shows the
-full room with overlay UI. Orientation switching is seamless mid-scene.
-Phone-UI scenes (chatbots, calls, apps — frequent in this story) are
-portrait-native by design: the player's phone becomes the in-fiction prop.
-Primary buttons (e.g., TERMINATE) are placed per-orientation, not scaled.
+full room with overlay UI. Orientation switching is seamless mid-scene —
+implemented as two UI layouts re-anchored over one scene graph, never
+uniform scaling. Phone-UI scenes (chatbots, calls, apps — frequent in this
+story) are portrait-native by design: the player's phone becomes the
+in-fiction prop. Primary buttons (e.g., TERMINATE) are placed
+per-orientation in the bottom-center thumb zone (Hoober's data: 75% of
+touches are thumb-driven; comfort peaks bottom-center). Precedents: Papers
+Please mobile (Pope's devlog — stacked regions, mixed integer pixel scales
+per region for legibility) and Adventure Escape Mysteries (tall scenes +
+bottom bar, portrait point-and-click at tens-of-millions scale). Where a
+room fights the crop-and-pan corridor, the Papers-Please move is licensed:
+recompose that room's portrait layout as stacked regions.
 
 - **Input**: pointer-events core unifying mouse/touch/pen. Touch: tap = walk/
   interact, hold = examine/reveal, two-finger tap = skip, hotspot hitboxes

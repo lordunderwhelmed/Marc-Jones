@@ -111,9 +111,12 @@ PWA + Capacitor + (deferred: Electron) shells.
   table CSV/JSON), puzzles (dependency-graph JSON), palettes (LUT PNGs).
   Engine code knows genres of things, never specific things.
 - **The stack** (per `DESIGN.md` §6): TypeScript + PixiJS v8, Vite build,
-  Workbox PWA, Capacitor 7, WebCodecs for the Moments encoder (fallback:
-  MediaRecorder; native plugin if Safari WKWebView blocks both — research
-  pending).
+  Workbox PWA, Capacitor 7. Moments encoder: WebCodecs VideoEncoder +
+  **Mediabunny** muxer (mp4-muxer is deprecated), encoding in a Web Worker;
+  scene rendered to a `RenderTexture` at native low res and nearest-neighbor
+  upscaled to 1080×1920. Audio in clips: AAC where supported; on iOS <26
+  (no AudioEncoder in WebKit) ship silent clips v0 and revisit. Share via
+  `@capacitor/share` + `@capacitor-community/media` (camera roll).
 - **Repo layout (proposal):**
   `engine/` (rendering, input, haptics, audio, moments, save) ·
   `game/` (scene data, ink, cues, art, palettes) ·

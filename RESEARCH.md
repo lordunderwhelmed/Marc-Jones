@@ -180,6 +180,85 @@ argument for keeping Capacitor primary on mobile.
 - Saves: JSON flags → IndexedDB + `navigator.storage.persist()`; abstract
   SaveStore → Capacitor Filesystem / Steam Cloud / optional account sync.
 
+## 4. Shareable clips ("Moments engine") — 2026 findings
+
+### Shipped precedents
+- **Replay directors**: Gran Turismo's *fixed, pre-authored* trackside cameras
+  read far more cinematic than Forza's algorithmic moving cameras — author
+  camera beats per moment, don't compute them.
+- **PUBG Mobile "Highlight Moments"**: in-engine auto-clips, pre-generated
+  and previewed on the results screen with one share button, and
+  **quality-gated** (only good matches get clips). Opt-out, not opt-in;
+  never block progress with share prompts.
+- **NVIDIA Highlights / PS5 trophy capture**: the integration model — the
+  game declares moment boundaries via events; a rolling buffer supplies
+  lead-in. PS5 defaults to 15s.
+- **TikTok Share Kit (official SDK)**: share .mp4 straight into the TikTok
+  composer from Capacitor apps (iOS/Android); requires the video in the
+  photo library (`@capacitor-community/media` saveVideo) + client key.
+- Why clips spread: one clear trigger (surprise, fail, clutch, "that's so
+  me", reveal); humor/relatable fails outperform skill; forced prompts
+  backfire; UGC reads authentic vs ads.
+
+### Tech (web, mid-2026)
+- **Deterministic replay** (inputs + tick + seed, fixed timestep) is the
+  right architecture: decouples render from session → any camera/aspect,
+  UI stripped. Easy for a puzzle game; guard against unseeded RNG and
+  time-based logic. Keep a rolling input buffer for lead-in.
+- **PixiJS offscreen**: `RenderTexture.create({width,height})` renders any
+  container at arbitrary size off-stage; render pixel-art scene at native
+  low res, integer-upscale nearest-neighbor into 1080×1920.
+- **Encoding**: WebCodecs VideoEncoder — Chrome/Edge 94+, Firefox 130+,
+  Safari/iOS 16.4+ (video only); **AudioEncoder only from Safari/iOS 26**.
+  Muxing: `mp4-muxer`/`webm-muxer` are **deprecated** — use **Mediabunny**
+  (successor, TS, wraps WebCodecs, canvas source + Web Audio pipeline).
+  Audio codec: AAC where available; iOS <26 → silent video or native
+  fallback. Avoid `captureStream`+MediaRecorder (realtime-only, drops
+  frames, WebM output). Encode in a Web Worker; 1080×1920 H.264 encodes
+  ~realtime-or-faster on mid mobile; show progress UI.
+- **Share**: `@capacitor/share` (sheet), `@capacitor-community/media`
+  (camera roll), TikTok Share Kit (composer).
+
+### Clip design
+- 8–15s; hook in first 3s → open at/just before the payoff, not the setup.
+  Structure: 2–4s lead-in → solve with camera push-in → 1–2s reaction →
+  ~1s end card. Cross-platform safe zone on 1080×1920: **~900×1400
+  centered** (TikTok: ~130px top, ~484px bottom, ~140px right clear).
+  Small wordmark inside safe zone + end card; keep branding subtle.
+- Privacy: engine re-render is inherently clean (no screen/mic capture);
+  strip user-entered text; photo-library permission via OS flows.
+
+## 5. Portrait-mode play — 2026 findings
+
+- **Papers, Please mobile (Lucas Pope devlog)** — the best documented
+  wide→portrait reframe: stacked regions + swipeable bottom carousel,
+  **mixed integer pixel scales per region** (3× documents, 2× checkpoint),
+  internal resolution derived from text legibility on a small iPhone.
+  Portrait-only by design. dukope.com/devlogs/papers-please/mobile/
+- **Florence** (Ken Wong): portrait = intimacy — "we use them in bed…
+  they feel personal"; vertical comic-panel composition. Monument Valley:
+  portrait because the *architecture* is vertical. Adventure Escape
+  Mysteries (tens of millions of players): tall-composed scenes + bottom
+  inventory bar — the genre works portrait at scale when authored for it.
+  Golden Idol's Netflix port stayed landscape (cheap-port evidence, not a
+  counterargument). Dual-orientation games are rare; most commit.
+- **Thumb-zone data (Hoober, 1,300+ observations)**: 49% one-handed, 75%
+  of touches thumb-driven; comfort = lower two-thirds, best bottom-center;
+  top corners worst. Inventory/dialogue-advance bottom-center; scene in
+  the middle band; settings top.
+- **The de facto portrait adventure layout** = letterboxed scene band +
+  functional UI filling the lower third (our "Book panel" matches it).
+- Safe areas: `viewport-fit=cover` + `env(safe-area-inset-*)`;
+  `@capacitor-community/safe-area` for older Android WebViews.
+- Text minimums: web body ≥16px; ~28px @1080p floor for game text;
+  44pt/48dp targets. Orientation switching = two UI layouts re-anchored
+  over one scene graph, not uniform scaling.
+- No public retention data by orientation; qualitative consensus: portrait
+  = lower friction, micro-session-friendly, one-handed commute/bed play.
+  **Marketing bonus: portrait gameplay is natively 9:16 — auto-clips and
+  store assets need no reframing.** The clip camera becomes a zoom/pan
+  director over the same vertical composition.
+
 Full source URLs are preserved in the session research transcripts; key ones:
 grumpygamer.com/why_adventure_games_suck · grumpygamer.com/puzzle_dependency_charts ·
 dukope.com/devlogs/obra-dinn/tig-32 · dpadstudio.com/Blog/postHibit.html ·
