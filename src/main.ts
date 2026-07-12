@@ -1,74 +1,97 @@
-import { Application, Container, Sprite, Texture, Graphics, TilingSprite } from 'pixi.js';
+import { Application, Container, Sprite, Texture, Graphics } from 'pixi.js';
 import { haptics } from './engine/haptics';
 import { audio } from './engine/audio';
-import { W, H, WALK_MIN_Y, WALK_MAX_Y, drawRoom, drawPlant, drawMoosh, drawZosia, drawGlow, PAL } from './game/art';
+import {
+  ROOMW, H, WALK_MIN_Y, WALK_MAX_Y, WIN,
+  drawRoom, drawCity, drawForeground, drawShaft, drawPlant, drawMoosh, drawZosia, drawGlow,
+} from './game/art';
 import { HOTSPOTS, PARSLEY, CUES, CHAT, END_LINE, HotspotDef } from './game/content';
 
 // ----------------------------------------------------------------- helpers
 const $ = (id: string) => document.getElementById(id)!;
-const tex = (cv: HTMLCanvasElement) => { const t = Texture.from(cv); t.source.scaleMode = 'nearest'; return t; };
+const tex = (cv: HTMLCanvasElement, smooth = false) => {
+  const t = Texture.from(cv);
+  t.source.scaleMode = smooth ? 'linear' : 'nearest';
+  return t;
+};
 
 // ----------------------------------------------------------------- state
 type Phase = 'explore' | 'wantPhoto' | 'approved' | 'settings' | 'confirm' | 'done';
 const state = {
   phase: 'explore' as Phase,
-  chatStage: 'hello' as 'hello' | 'post',
   hasParsley: false,
   garnished: false,
   photoFails: 0,
   examined: new Set<string>(),
   cuesShown: new Set<string>(),
   chatSeen: false,
-  refunded: false,
 };
 
-// ----------------------------------------------------------------- boot
+// ----------------------------------------------------------------- stage
 const app = new Application();
-let viewW = W; // portrait crop width
+let viewW = 384;               // world units visible
+let sceneScale = 1;            // world → CSS px
 let camX = 0, camTargetX = 0;
-let sceneScale = 1;
 const world = new Container();
 
+// parallax planes
+let citySpr: Sprite, fgSpr: Sprite, shaftSpr: Sprite;
 let zosia: Sprite, plantSpr: Sprite, mooshSpr: Sprite;
 let zosiaFrames: Texture[] = [];
-let phoneGlow: Sprite, neonGlow: Sprite;
-let rainG: Graphics;
-let revealG: Graphics;
+let phoneGlow: Sprite, lampGlow: Sprite;
+let rainG: Graphics, motesG: Graphics, revealG: Graphics;
 
-const Z = { x: 120, y: 190, tx: 120, ty: 190, walking: false, flip: false, frame: 0, ft: 0 };
+const ZSCALE = 0.2; // 100×210 smooth frames → 20×42 world units
+const Z = { x: 280, y: 190, tx: 280, ty: 190, walking: false, flip: false, frame: 0, ft: 0 };
 let queuedAction: (() => void) | null = null;
 let lastInput = performance.now();
 let idleShown = false;
+let camFocusMoosh = false;
+
+// dust motes in the sodium shaft
+const MOTES = Array.from({ length: 14 }, (_, i) => ({
+  x: 385 + (i * 37) % 130, y: 115 + (i * 53) % 90, v: 2.5 + (i % 4), ph: i * 0.7,
+}));
 
 async function boot() {
-  await app.init({ width: W, height: H, background: '#06050c', antialias: false, resolution: 1 });
+  await app.init({
+    width: viewW, height: H, background: '#070905', antialias: false,
+    resolution: Math.min(window.devicePixelRatio || 1, 3), autoDensity: true,
+  });
   ($('sceneWrap') as HTMLElement).prepend(app.canvas);
   app.canvas.id = 'game';
 
-  // --- static room
+  citySpr = new Sprite(tex(drawCity()));
+  world.addChild(citySpr);
   world.addChild(new Sprite(tex(drawRoom())));
 
-  // --- glows (additive-ish via alpha)
-  const glowT = tex(drawGlow(64));
-  neonGlow = new Sprite(glowT); neonGlow.tint = 0xff4f9e; neonGlow.alpha = 0.35;
-  neonGlow.width = 90; neonGlow.height = 40; neonGlow.position.set(212 + 45 - 45, 42 - 20 + 0); neonGlow.x = 222; neonGlow.y = 26;
-  world.addChild(neonGlow);
-  phoneGlow = new Sprite(glowT); phoneGlow.tint = 0x9fd8ff; phoneGlow.alpha = 0.5;
-  phoneGlow.width = 70; phoneGlow.height = 54; phoneGlow.position.set(231 - 35, 135 - 27);
+  const glowT = tex(drawGlow(64), true);
+  lampGlow = new Sprite(glowT); lampGlow.tint = 0xffb14a; lampGlow.alpha = 0.3;
+  lampGlow.width = 150; lampGlow.height = 110;
+  lampGlow.position.set(WIN.x + WIN.w / 2 - 75, WIN.y + WIN.h / 2 - 50);
+  world.addChild(lampGlow);
+
+  shaftSpr = new Sprite(tex(drawShaft()));
+  shaftSpr.position.set(WIN.x - 60, WIN.y + WIN.h - 6);
+  world.addChild(shaftSpr);
+
+  phoneGlow = new Sprite(glowT); phoneGlow.tint = 0x7adfff; phoneGlow.alpha = 0.5;
+  phoneGlow.width = 68; phoneGlow.height = 54;
+  phoneGlow.position.set(393 - 34, 133 - 27);
   world.addChild(phoneGlow);
 
-  // --- rain inside window
   rainG = new Graphics(); world.addChild(rainG);
+  motesG = new Graphics(); world.addChild(motesG);
 
-  // --- plant & moosh
-  plantSpr = new Sprite(tex(drawPlant(true))); plantSpr.position.set(290, 74); world.addChild(plantSpr);
-  mooshSpr = new Sprite(tex(drawMoosh(false))); mooshSpr.anchor.set(0.5, 1); mooshSpr.position.set(196, 146); world.addChild(mooshSpr);
+  plantSpr = new Sprite(tex(drawPlant(true))); plantSpr.position.set(506, 83); world.addChild(plantSpr);
+  mooshSpr = new Sprite(tex(drawMoosh(false))); mooshSpr.anchor.set(0.5, 1); mooshSpr.position.set(352, 144); world.addChild(mooshSpr);
 
-  // --- Zosia
-  zosiaFrames = drawZosia().map(tex);
-  zosia = new Sprite(zosiaFrames[0]); zosia.anchor.set(0.5, 1); zosia.position.set(Z.x, Z.y);
+  zosiaFrames = drawZosia().map(c => tex(c, true));
+  zosia = new Sprite(zosiaFrames[0]); zosia.anchor.set(0.5, 1);
+  zosia.scale.set(ZSCALE); zosia.position.set(Z.x, Z.y);
   world.addChild(zosia);
 
+  fgSpr = new Sprite(tex(drawForeground())); world.addChild(fgSpr);
   revealG = new Graphics(); world.addChild(revealG);
 
   app.stage.addChild(world);
@@ -85,25 +108,19 @@ function layout() {
   const portrait = innerHeight > innerWidth;
   document.body.classList.toggle('portrait', portrait);
   document.body.classList.toggle('landscape', !portrait);
-  const wrap = $('sceneWrap');
-  // allow flex to settle
   requestAnimationFrame(() => {
+    const wrap = $('sceneWrap');
     const rw = wrap.clientWidth, rh = wrap.clientHeight;
-    if (portrait) {
-      viewW = Math.max(140, Math.min(W, Math.round((rw / rh) * H)));
-    } else {
-      viewW = W;
-    }
-    app.renderer.resize(viewW, H);
+    viewW = portrait ? Math.max(120, Math.min(ROOMW, Math.round((rw / rh) * H))) : 384;
     sceneScale = Math.min(rw / viewW, rh / H);
-    const cw = Math.floor(viewW * sceneScale), ch = Math.floor(H * sceneScale);
-    app.canvas.style.width = cw + 'px'; app.canvas.style.height = ch + 'px';
+    app.renderer.resize(Math.floor(viewW * sceneScale), Math.floor(H * sceneScale));
+    world.scale.set(sceneScale);
     clampCam();
   });
 }
 function clampCam() {
-  camTargetX = Math.max(0, Math.min(W - viewW, camTargetX));
-  camX = Math.max(0, Math.min(W - viewW, camX));
+  camTargetX = Math.max(0, Math.min(ROOMW - viewW, camTargetX));
+  camX = Math.max(0, Math.min(ROOMW - viewW, camX));
 }
 function focusCam(x: number) { camTargetX = x - viewW / 2; clampCam(); }
 
@@ -112,59 +129,65 @@ let t = 0;
 function tick(ticker: { deltaMS: number }) {
   const dt = ticker.deltaMS / 1000; t += dt;
 
-  // camera follows Zosia (or stays)
-  focusCamSoft();
+  focusCam(camFocusMoosh ? 352 : Z.x);
   camX += (camTargetX - camX) * Math.min(1, dt * 5);
-  world.x = -Math.round(camX);
 
-  // Zosia movement
+  // parallax: city drags behind (0.85), room 1.0, foreground leads (1.18)
+  const cx = Math.round(camX);
+  world.x = -Math.round(camX * sceneScale);
+  citySpr.position.set(WIN.x - 30 + cx * 0.15, WIN.y - 8);
+  fgSpr.x = -cx * 0.18;
+
+  // Zosia
   if (Z.walking) {
     const dx = Z.tx - Z.x, dy = Z.ty - Z.y;
     const dist = Math.hypot(dx, dy);
-    const speed = 62;
     if (dist < 2.5) {
       Z.walking = false; Z.frame = 0;
       if (queuedAction) { const a = queuedAction; queuedAction = null; a(); }
     } else {
+      const speed = 66;
       Z.x += (dx / dist) * speed * dt; Z.y += (dy / dist) * speed * dt;
       Z.flip = dx < 0;
       Z.ft += dt;
-      if (Z.ft > 0.12) { Z.ft = 0; Z.frame = (Z.frame + 1) % 4; }
+      if (Z.ft > 0.13) { Z.ft = 0; Z.frame = (Z.frame + 1) % 4; }
       zosia.texture = zosiaFrames[2 + Z.frame];
     }
   } else {
-    // idle blink
     zosia.texture = zosiaFrames[Math.floor(t * 0.8) % 7 === 3 ? 1 : 0];
   }
-  zosia.position.set(Math.round(Z.x), Math.round(Z.y));
-  zosia.scale.x = Z.flip ? -1 : 1;
+  zosia.position.set(Z.x, Z.y);
+  zosia.scale.x = Z.flip ? -ZSCALE : ZSCALE;
+  zosia.scale.y = ZSCALE;
 
-  // moosh wobble (it settles. food settles.)
+  // moosh settles. food settles. this is food. this is fine.
   mooshSpr.scale.y = 1 + Math.sin(t * 2.1) * 0.03;
-  mooshSpr.scale.x = (1 - Math.sin(t * 2.1) * 0.02);
+  mooshSpr.scale.x = 1 - Math.sin(t * 2.1) * 0.02;
 
-  // glows
-  phoneGlow.alpha = 0.38 + Math.sin(t * 1.7) * 0.1;
-  const flicker = Math.random() < 0.01 ? 0.1 : 0.35 + Math.sin(t * 0.9) * 0.08;
-  neonGlow.alpha = flicker;
+  phoneGlow.alpha = 0.4 + Math.sin(t * 1.7) * 0.1;
+  lampGlow.alpha = Math.random() < 0.006 ? 0.16 : 0.28 + Math.sin(t * 0.7) * 0.04; // sodium hum
 
-  // rain in window (212..304, 28..110)
+  // rain behind the glass
   rainG.clear();
-  for (let i = 0; i < 26; i++) {
-    const seed = i * 37.3;
-    const rx = 213 + ((seed * 13 + t * 60 * (0.7 + (i % 3) * 0.2)) % 90);
-    const ry = 29 + ((seed * 7 + t * 130 * (0.8 + (i % 4) * 0.15)) % 80);
-    rainG.moveTo(rx, ry).lineTo(rx - 1.5, ry + 5).stroke({ color: 0x8fb8d8, alpha: 0.35, width: 1 });
+  for (let i = 0; i < 24; i++) {
+    const seed = i * 41.3;
+    const rx = WIN.x + 2 + ((seed * 13 + t * 55 * (0.7 + (i % 3) * 0.2)) % (WIN.w - 4));
+    const ry = WIN.y + 2 + ((seed * 7 + t * 120 * (0.8 + (i % 4) * 0.15)) % (WIN.h - 6));
+    rainG.moveTo(rx, ry).lineTo(rx - 1.5, ry + 5).stroke({ color: 0xd8b080, alpha: 0.3, width: 1 });
   }
 
-  // idle narrator
+  // dust motes rising through the shaft
+  motesG.clear();
+  for (const m of MOTES) {
+    const my = 205 - ((m.y + t * m.v) % 92);
+    const mx = m.x + Math.sin(t * 0.6 + m.ph) * 3 - (205 - my) * 0.35;
+    const a = 0.12 + 0.1 * Math.sin(t * 1.3 + m.ph);
+    motesG.rect(mx, my, 1, 1).fill({ color: 0xffb14a, alpha: Math.max(0.04, a) });
+  }
+
   if (!idleShown && performance.now() - lastInput > 60000 && state.phase !== 'done') {
     idleShown = true; cue(CUES.idle);
   }
-}
-let camFocusMoosh = false;
-function focusCamSoft() {
-  if (camFocusMoosh) focusCam(196); else focusCam(Z.x);
 }
 
 // -------------------------------------------------------------------- input
@@ -222,7 +245,7 @@ function hitTest(x: number, y: number): HotspotDef | null {
 }
 
 function walkTo(x: number, y: number, then: (() => void) | null, instant = false) {
-  Z.tx = Math.max(12, Math.min(W - 12, x));
+  Z.tx = Math.max(14, Math.min(ROOMW - 14, x));
   Z.ty = Math.max(WALK_MIN_Y, Math.min(WALK_MAX_Y, y));
   queuedAction = then;
   if (instant) { // double-tap: walking is never waiting (DESIGN.md §3.5)
@@ -309,16 +332,16 @@ function showReveal() {
   clearChips();
   for (const h of HOTSPOTS) {
     if (h.id === 'floor') continue;
-    const cx = h.x + h.w / 2, cy = h.y + h.h / 2;
-    if (cx < camX - 10 || cx > camX + viewW + 10) continue;
-    revealG.moveTo(cx, cy - 5).lineTo(cx + 5, cy).lineTo(cx, cy + 5).lineTo(cx - 5, cy).closePath()
-      .fill({ color: 0xffb64c, alpha: 0.9 });
-    const s = worldToScreen(cx, cy);
+    const cx2 = h.x + h.w / 2, cy = h.y + h.h / 2;
+    if (cx2 < camX - 10 || cx2 > camX + viewW + 10) continue;
+    revealG.moveTo(cx2, cy - 5).lineTo(cx2 + 5, cy).lineTo(cx2, cy + 5).lineTo(cx2 - 5, cy).closePath()
+      .fill({ color: 0xffb14a, alpha: 0.9 });
+    const s = worldToScreen(cx2, cy);
     const chip = document.createElement('div');
     chip.textContent = h.label;
     chip.style.cssText = `position:fixed;left:${s.x}px;top:${s.y - 26}px;transform:translateX(-50%);
-      background:rgba(13,10,24,.92);color:#e8ddc4;font:11px 'Courier New',monospace;padding:3px 7px;
-      border:1px solid #3a2d5c;border-radius:6px;z-index:45;pointer-events:none;white-space:nowrap;`;
+      background:rgba(10,12,6,.92);color:#e8d9b0;font:11px 'Courier New',monospace;padding:3px 7px;
+      border:1px solid #4a3a20;border-radius:6px;z-index:45;pointer-events:none;white-space:nowrap;`;
     document.body.appendChild(chip); chipEls.push(chip);
   }
   window.setTimeout(() => { revealG.clear(); clearChips(); }, 2200);
@@ -337,7 +360,7 @@ function openPhone() {
     sys('tonight · 02:07');
     bot(CHAT.hello[0]);
     setChoices(CHAT.helloChoices.map(c => ({
-      label: c.t, danger: false,
+      label: c.t,
       fn: () => { me(c.t); if (c.r) { botDelayed(c.r); } else advanceToPhoto(); },
     })));
   }
@@ -408,8 +431,8 @@ function camTap(x: number, y: number) {
   camChip = document.createElement('div');
   camChip.textContent = '⌖ ' + label;
   camChip.style.cssText = `position:fixed;left:${Math.max(80, Math.min(innerWidth - 80, s.x))}px;top:${Math.max(50, s.y - 30)}px;
-    transform:translateX(-50%);background:rgba(8,12,20,.92);color:${ok ? '#7dffa8' : (hs.id === 'moosh' ? '#ff8a9a' : '#cfe0ff')};
-    font:12px 'Courier New',monospace;padding:5px 9px;border:1px solid ${ok ? '#2d7a45' : '#3b4368'};border-radius:6px;z-index:75;
+    transform:translateX(-50%);background:rgba(8,10,5,.92);color:${ok ? '#a4c85e' : (hs.id === 'moosh' ? '#ff8a5e' : '#e8d9b0')};
+    font:12px 'Courier New',monospace;padding:5px 9px;border:1px solid ${ok ? '#4a6a2e' : '#4a3a20'};border-radius:6px;z-index:75;
     pointer-events:none;white-space:nowrap;max-width:86vw;`;
   document.body.appendChild(camChip);
 }
@@ -444,7 +467,7 @@ function openPhoneBare() { phoneEl.classList.add('show'); audio.holdMusic(true);
 
 // ----------------------------------------------------------- refund + endgame
 function approve() {
-  state.phase = 'approved'; state.refunded = true;
+  state.phase = 'approved';
   audio.sfx('refund'); haptics.play('success');
   me('[photo of one (1) plated entrée]');
   botDelayed(CHAT.approved, 900);
@@ -521,8 +544,10 @@ function bindUI() {
   });
   $('shutter').addEventListener('click', shutter);
   $('camClose').addEventListener('click', () => { closeCam(); openPhoneBare(); });
-  // keep GRAVY reachable: tapping outside phone body closes it
   phoneEl.addEventListener('click', (e) => { if (e.target === phoneEl) closePhone(); });
 }
 
 boot();
+
+// test/debug hook (harmless in production; used by the Playwright playthrough)
+(window as any).__bg = { view: () => ({ camX, viewW }) };

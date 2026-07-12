@@ -3,20 +3,20 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-<meta name="theme-color" content="#0b0a14" />
+<meta name="theme-color" content="#0a0c07" />
 <title>The Big Glitch — Chapter Zero: The Moosh</title>
 <style>
-  :root { --paper:#e8ddc4; --ink:#1a1410; --glow:#ffb64c; }
+  :root { --paper:#e8d9b0; --ink:#141008; --glow:#ffb14a; --ground:#0a0c07; --line:#4a3a20; --panel:#12160c; }
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  html,body { height:100%; overflow:hidden; background:#0b0a14; touch-action:none;
+  html,body { height:100%; overflow:hidden; background:var(--ground); touch-action:none;
     font-family: Georgia, 'Times New Roman', serif; user-select:none; -webkit-user-select:none; }
   #app { position:fixed; inset:0; display:flex; flex-direction:column; }
-  #sceneWrap { position:relative; flex:1; min-height:0; display:flex; align-items:center; justify-content:center; background:#06050c; }
+  #sceneWrap { position:relative; flex:1; min-height:0; display:flex; align-items:center; justify-content:center; background:#070905; }
   canvas { image-rendering: pixelated; image-rendering: crisp-edges; display:block; }
 
   /* ---- The Book panel (portrait) / caption bar (landscape) ---- */
-  #book { position:relative; background:linear-gradient(180deg,#171225,#0d0a18);
-    border-top:2px solid #2c2244; padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+  #book { position:relative; background:linear-gradient(180deg,#1a2010,#0d1008);
+    border-top:2px solid #4a3a20; padding:10px 14px calc(10px + env(safe-area-inset-bottom));
     color:var(--paper); display:none; flex-direction:column; gap:8px; }
   body.portrait #book { display:flex; min-height:31%; max-height:38%; }
   body.landscape #caption { position:absolute; left:50%; transform:translateX(-50%);
@@ -24,19 +24,19 @@
   body.portrait #caption { display:none; }
 
   .cap { font-style:italic; font-size:clamp(15px,2.4vh,19px); line-height:1.45;
-    background:rgba(13,10,24,.92); border:1px solid #3a2d5c; border-left:3px solid var(--glow);
+    background:rgba(10,12,6,.92); border:1px solid #3a2e14; border-left:3px solid var(--glow);
     padding:10px 14px; border-radius:2px; color:var(--paper); opacity:0; transition:opacity .45s; }
   .cap.show { opacity:1; }
-  .cap .who { display:block; font-style:normal; font-size:11px; letter-spacing:2px; color:#8f7fc0; margin-bottom:3px; }
-  .cap.inner { font-family:'Courier New',monospace; font-style:normal; border-left-color:#63d8c9; }
+  .cap .who { display:block; font-style:normal; font-size:11px; letter-spacing:2px; color:#b08a4a; margin-bottom:3px; }
+  .cap.inner { font-family:'Courier New',monospace; font-style:normal; border-left-color:#7adfff; }
 
   #hud { position:absolute; top:calc(8px + env(safe-area-inset-top)); right:10px; z-index:40; display:flex; gap:8px; }
-  .hbtn { width:42px; height:42px; border-radius:10px; border:1px solid #3a2d5c; background:rgba(13,10,24,.85);
+  .hbtn { width:42px; height:42px; border-radius:10px; border:1px solid var(--line); background:rgba(10,12,6,.85);
     color:var(--paper); font-size:19px; font-family:Georgia,serif; display:flex; align-items:center; justify-content:center; }
-  .hbtn:active { background:#2c2244; }
+  .hbtn:active { background:#3a2e14; }
   #inv { position:absolute; top:calc(8px + env(safe-area-inset-top)); left:10px; z-index:40; display:flex; gap:8px; }
   .invchip { display:none; align-items:center; gap:7px; padding:7px 12px; border-radius:10px;
-    border:1px solid #3f5c2d; background:rgba(13,24,10,.88); color:#cfe8b0; font-size:13px; font-family:'Courier New',monospace; }
+    border:1px solid #4a6a2e; background:rgba(12,18,6,.88); color:#c8dfa0; font-size:13px; font-family:'Courier New',monospace; }
   .invchip.show { display:flex; }
 
   /* ---- Phone overlay ---- */
@@ -44,7 +44,7 @@
     background:rgba(4,3,10,.55); backdrop-filter:blur(2px); }
   #phone.show { display:flex; }
   #phoneBody { width:min(370px,92vw); height:min(660px,88vh); background:#0e1018; border:2px solid #2a2f45;
-    border-radius:26px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 0 60px rgba(120,80,255,.25); }
+    border-radius:26px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 0 70px rgba(122,223,255,.22); }
   #phoneTop { padding:12px 16px 10px; background:#121627; color:#9aa4d6; font-family:'Courier New',monospace;
     font-size:13px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #232a44; }
   #chat { flex:1; overflow-y:auto; padding:14px 12px; display:flex; flex-direction:column; gap:10px; }
@@ -74,17 +74,17 @@
 
   /* ---- Start / end pages ---- */
   .page { position:absolute; inset:0; z-index:100; background:
-    radial-gradient(120% 90% at 50% 10%, #171130 0%, #0b0a14 60%);
+    radial-gradient(120% 90% at 50% 10%, #241a09 0%, #0a0c07 60%);
     display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--paper); padding:24px; }
   .page h1 { font-size:clamp(34px,8vw,64px); letter-spacing:4px; font-weight:normal; }
   .page h1 .g { color:var(--glow); }
-  .page .sub { margin-top:10px; font-style:italic; color:#9c8fc4; font-size:clamp(14px,2.4vw,18px); }
-  .page .go { margin-top:38px; padding:14px 34px; border:1px solid #6b5a9e; border-radius:3px; background:rgba(35,26,64,.6);
+  .page .sub { margin-top:10px; font-style:italic; color:#b08a4a; font-size:clamp(14px,2.4vw,18px); }
+  .page .go { margin-top:38px; padding:14px 34px; border:1px solid #a86a28; border-radius:3px; background:rgba(58,46,20,.5);
     color:var(--paper); font-family:Georgia,serif; font-size:17px; font-style:italic; }
-  .page .go:active { background:#3a2d5c; }
-  .page .tiny { position:absolute; bottom:calc(14px + env(safe-area-inset-bottom)); font-size:11px; color:#5c5480; font-style:italic; }
+  .page .go:active { background:#4a3a20; }
+  .page .tiny { position:absolute; bottom:calc(14px + env(safe-area-inset-bottom)); font-size:11px; color:#6e5a34; font-style:italic; }
   #endPage { display:none; }
-  #counterBig { font-family:'Courier New',monospace; font-size:clamp(40px,10vw,84px); color:#ff5470; letter-spacing:3px; }
+  #counterBig { font-family:'Courier New',monospace; font-size:clamp(40px,10vw,84px); color:#ff8a5e; letter-spacing:3px; }
   button { cursor:pointer; }
 </style>
 </head>

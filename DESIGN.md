@@ -141,7 +141,20 @@ and instant resume.
 
 ---
 
-## 4. Art Direction: "Remembered VGA"
+## 4. Art Direction: "Remembered VGA" → v2: "Sodium-Vapor Night"
+
+> **v2 pivot (playtest feedback: v1 read as generic indie-night).** The slice
+> now commits to the Thimbleweed Park school and a signature palette:
+> - **Mixels, deliberately**: chunky dithered painterly backgrounds; small
+>   characters drawn smooth at 5× resolution and scaled down with linear
+>   filtering — crisp, rounded, intentionally off the background grid.
+> - **Three parallax planes** per room: through-the-window layer (0.85) <
+>   room (1.0) < foreground silhouettes (1.18). Rooms are authored wider
+>   than the viewport (560 vs 384) so even landscape pans.
+> - **Palette thesis — sodium-vapor night**: the world is amber streetlight
+>   + green-black shadow (light-polluted amber sky, olive props, amber rim
+>   lights); **the only cold color in the room is a screen**. Cyan = the
+>   machine. The grade carries the game's argument.
 
 - **Virtual resolution 384×216** (16:9; integer-scales ×5 to 1080p, ×10 to
   4K; the one non-integer target, 1440p, gets the +1px-border subpixel
