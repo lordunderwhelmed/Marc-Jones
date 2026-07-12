@@ -53,6 +53,15 @@ not a settings menu of mercy toggles.
   any puzzle opens 2–3 new ones; the graph converges only at act breaks.
   **The player always has ≥3 live threads.** Stuck on one? Lateral motion is
   always available — that alone deletes most of the 90s stuck-feeling.
+- **The difficulty dial: "irrational but inevitable."** We embrace the
+  cartoon-logic whimsy of Indy/Monkey Island/DOTT puzzles — but those were
+  a tiny bit too hard, and that margin is exactly what we tune out. The
+  rule: irrationality must be *learnable* — the world's absurd systems obey
+  their own consistent rules, and the scene teaches its rule before asking
+  the player to exploit it (the slice's classifier judges garnish, and
+  demonstrates it on two optional hotspots before the puzzle needs it).
+  Calibration knobs live in data per puzzle: step count, clue-to-use
+  distance, signposting strength, attempts-before-nudge.
 - **Gilbert's 1989 rules are hard constraints**: no deaths to learn from, no
   unwinnable states, no missable items (anything needed later is always
   retrievable), problems introduced before their solutions (lock before key),
@@ -207,6 +216,30 @@ Signature patterns:
   Global intensity slider incl. off; haptics never fire without a paired
   visual/audio cue.
 
+### 5.3 The Moments engine ("TikTokable" solves)
+
+Every puzzle solve and major story beat is auto-captured as a **shareable
+vertical mini-video, rendered from the engine** — not a screen recording:
+no menus, no cursor, no UI; the game re-renders the moment clean at
+1080×1920 with fast cuts (lead-in beats → the solve → reaction → title
+card). Mechanism: deterministic replay (the engine logs inputs/state
+deltas; the moment is re-simulated offscreen with an authored "director"
+cut list per moment type), encoded in-browser via WebCodecs (fallbacks:
+MediaRecorder / native plugin under Capacitor), one-tap native share sheet.
+Target duration 8–15s; safe areas for TikTok/Reels/Shorts overlays;
+watermarked with the book's colophon. Tagged moment types: puzzle solves,
+tedium-boss kills, TERMINATE presses, chapter cards. Sharing is always
+player-initiated — auto-capture, manual publish.
+
+### 5.4 Narration as a pillar
+
+The narrator (recorded by the author) is a core system, not garnish: cue-ID
+table drives playback, music ducking, once-per-rule repetition awareness,
+and reactive alternates (replay lines, idle lines, speed-run lines).
+Scripts live in `story/scripts/` with slate-based recording conventions so
+sessions are non-technical. Character dialogue may ship as narrator-read
+"audiobook mode" — fitting the playable-book frame; decide after v1 takes.
+
 ## 6. Tech Stack (the Vampire Survivors template)
 
 - **Core**: TypeScript + **PixiJS v8** (WebGL, nearest-neighbor scaling) with
@@ -221,6 +254,19 @@ Signature patterns:
   haptics — iOS Safari still blocks the web Vibration API) + **Electron +
   steamworks.js** for Steam with Auto-Cloud saves. Exactly the architecture
   Vampire Survivors shipped.
+### 6.1 Portrait mode is first-class (phones are the primary platform)
+
+Every room is authored wide (384×216) **with a defined portrait focus
+corridor** — a per-room camera track the crop-and-pan portrait camera
+follows (character position + active hotspot weighting). Portrait layout:
+scene viewport on top ~55–60% of the screen, the **Book panel** (dialogue,
+inventory, journal margin-notes) filling the bottom thumb zone — dialogue
+and critical buttons always land where a thumb rests. Landscape shows the
+full room with overlay UI. Orientation switching is seamless mid-scene.
+Phone-UI scenes (chatbots, calls, apps — frequent in this story) are
+portrait-native by design: the player's phone becomes the in-fiction prop.
+Primary buttons (e.g., TERMINATE) are placed per-orientation, not scaled.
+
 - **Input**: pointer-events core unifying mouse/touch/pen. Touch: tap = walk/
   interact, hold = examine/reveal, two-finger tap = skip, hotspot hitboxes
   inflated to ≥48dp (~25 art-pixels at 384×216 on a 6" phone — diegetic

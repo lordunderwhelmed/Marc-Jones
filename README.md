@@ -13,6 +13,9 @@ book about the year the AI economy died of a quadrillion small errors.
 | [`RESEARCH.md`](RESEARCH.md) | Condensed research findings with sources (genre friction fixes, hi-bit art, web stack & haptics) |
 | [`story/backdrop.md`](story/backdrop.md) | The source text, verbatim — the "book" the game adapts |
 | [`story/NARRATIVE.md`](story/NARRATIVE.md) | Narrative design brainstorm: protagonists, mystery spine, the three-layer structure for hundreds of hours & replayability |
+| [`story/INTRO.md`](story/INTRO.md) | Chapter Zero design: the flash-forward cold open, the five Night-of-the-Sheep vignettes, and the boardroom scene |
+| [`story/scripts/intro-narration.md`](story/scripts/intro-narration.md) | Narrator VO script v1 with recording conventions (author-narrated) |
+| [`VERTICAL_SLICE.md`](VERTICAL_SLICE.md) | The engineering paradigm: "The Moosh" slice spec, acceptance criteria, build order |
 
 ## Status
 
