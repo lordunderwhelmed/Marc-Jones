@@ -3,14 +3,15 @@ import { haptics } from './engine/haptics';
 import { audio } from './engine/audio';
 import {
   ROOMW, H, WALK_MIN_Y, WALK_MAX_Y, WIN, GLOW, applyTheme,
-  drawRoom, drawCity, drawForeground, drawShaft, drawPlant, drawMoosh, drawZosia, drawGlow, drawGrain, PAL,
+  drawRoom, drawCity, drawForeground, drawShaft, drawPlant, drawMoosh, drawZosia, drawGlow, drawGrain,
+  drawSock, drawFridgeOpen, PAL,
 } from './game/art';
 
 // theme must apply before any draw calls
 const THEME = (new URLSearchParams(location.search).get('theme') || localStorage.getItem('bg-theme') || 'a').toLowerCase();
 applyTheme(THEME);
 const SCENE_SEL = (new URLSearchParams(location.search).get('scene') || localStorage.getItem('bg-scene') || 'moosh').toLowerCase();
-import { HOTSPOTS, PARSLEY, CUES, CHAT, END_LINE, HotspotDef } from './game/content';
+import { HOTSPOTS, PARSLEY, CUES, CHAT, END_LINE, DEPTH, HotspotDef } from './game/content';
 
 // ----------------------------------------------------------------- helpers
 const $ = (id: string) => document.getElementById(id)!;
@@ -30,6 +31,14 @@ const state = {
   examined: new Set<string>(),
   cuesShown: new Set<string>(),
   chatSeen: false,
+  fridgeOpen: false,
+  hasSock: false,
+  depthCount: {} as Record<string, number>,
+};
+const nextLine = (key: string, lines: string[]) => {
+  const i = state.depthCount[key] ?? 0;
+  state.depthCount[key] = i + 1;
+  return lines[Math.min(i, lines.length - 1)];
 };
 
 // ----------------------------------------------------------------- stage
@@ -46,6 +55,7 @@ let zosiaFrames: Texture[] = [];
 let phoneGlow: Sprite, lampGlow: Sprite, neonGlow: Sprite;
 let rainG: Graphics, motesG: Graphics, revealG: Graphics;
 let inkA: Sprite | null = null, inkB: Sprite | null = null;
+let fridgeOverlay: Sprite, sockSpr: Sprite;
 
 const ZSCALE = 0.2; // 100×210 smooth frames → 20×42 world units
 const Z = { x: 280, y: 190, tx: 280, ty: 190, walking: false, flip: false, frame: 0, ft: 0 };
@@ -103,7 +113,9 @@ async function boot() {
   rainG = new Graphics(); world.addChild(rainG);
   motesG = new Graphics(); world.addChild(motesG);
 
-  plantSpr = new Sprite(tex(drawPlant(true))); plantSpr.position.set(506, 83); world.addChild(plantSpr);
+  plantSpr = new Sprite(tex(drawPlant(true))); plantSpr.position.set(503, 78); world.addChild(plantSpr);
+  fridgeOverlay = new Sprite(tex(drawFridgeOpen())); fridgeOverlay.position.set(146, 46); fridgeOverlay.visible = false; world.addChild(fridgeOverlay);
+  sockSpr = new Sprite(tex(drawSock())); sockSpr.position.set(94, 164); world.addChild(sockSpr);
   mooshSpr = new Sprite(tex(drawMoosh(false))); mooshSpr.anchor.set(0.5, 1); mooshSpr.position.set(352, 144); world.addChild(mooshSpr);
 
   zosiaFrames = drawZosia().map(c => tex(c, true));
@@ -181,6 +193,7 @@ function tick(ticker: { deltaMS: number }) {
     }
   } else {
     zosia.texture = zosiaFrames[Math.floor(t * 0.8) % 7 === 3 ? 1 : 0];
+    Z.flip = false; // idle faces the room (front frames)
   }
   zosia.position.set(Z.x, Z.y);
   zosia.scale.x = Z.flip ? -ZSCALE : ZSCALE;
@@ -331,6 +344,10 @@ function cue(c: { id: string; who: string; text: string }) {
 
 // ------------------------------------------------------------- interactions
 function examine(hs: HotspotDef) {
+  if (hs.id === 'fridge' && state.fridgeOpen) {
+    showCap(nextLine('fridgeIn', DEPTH.fridgeInside), 'zosia', true);
+    return;
+  }
   const second = state.examined.has(hs.id) && hs.examine2;
   state.examined.add(hs.id);
   let line = second ? hs.examine2! : hs.examine;
@@ -348,6 +365,35 @@ function examine(hs: HotspotDef) {
 function interact(hs: HotspotDef) {
   switch (hs.id) {
     case 'phone': openPhone(); return;
+    case 'fridge':
+      state.fridgeOpen = !state.fridgeOpen;
+      fridgeOverlay.visible = state.fridgeOpen;
+      haptics.play('impact'); audio.sfx(state.fridgeOpen ? 'reveal' : 'blip');
+      showCap(state.fridgeOpen ? nextLine('fridgeOpen', DEPTH.fridgeOpen) : DEPTH.fridgeClose, 'zosia', true);
+      return;
+    case 'sink':
+      haptics.play('tick'); audio.sfx('blip');
+      showCap(nextLine('sink', DEPTH.sink), 'zosia', true);
+      return;
+    case 'window':
+      haptics.play('tick'); audio.rainBoost(3.5);
+      showCap(nextLine('window', DEPTH.window), 'zosia', true);
+      return;
+    case 'hatch':
+      haptics.play('tick'); audio.sfx('blip');
+      showCap(nextLine('hatch', DEPTH.hatch), 'zosia', true);
+      return;
+    case 'sock':
+      if (!state.hasSock) {
+        state.hasSock = true;
+        sockSpr.visible = false;
+        haptics.play('pickup'); audio.sfx('pickup');
+        const chip = document.createElement('div');
+        chip.className = 'invchip show'; chip.textContent = '🧦 one (1) sock';
+        $('inv').appendChild(chip);
+        showCap(DEPTH.sockPickup, 'zosia', true);
+      } else examine(hs);
+      return;
     case 'plant':
       if (!state.hasParsley) {
         state.hasParsley = true;
@@ -365,8 +411,9 @@ function interact(hs: HotspotDef) {
         haptics.play('squelch'); audio.sfx('garnish');
         showCap(PARSLEY.garnishLine, 'zosia', true);
       } else {
-        haptics.play('squelch');
-        examine(hs);
+        haptics.play('squelch'); audio.sfx('blip');
+        if (state.examined.has('moosh')) showCap(nextLine('poke', DEPTH.mooshPokes), 'zosia', true);
+        else examine(hs);
       }
       return;
     default: examine(hs);

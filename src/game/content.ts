@@ -52,10 +52,46 @@ export const HOTSPOTS: HotspotDef[] = [
   { id: 'clock', label: 'wall clock', x: 395, y: 33, w: 26, h: 26, walkX: 406,
     examine: "02:07. The hour of refunds.",
     camLabel: 'TIME 100% · late' },
+  { id: 'sock', label: 'one (1) sock', x: 92, y: 162, w: 20, h: 14, walkX: 106,
+    examine: "A sock. Alone. It has clearly been through something.",
+    camLabel: 'SOCK 96% · pair confidence: 50%' },
   { id: 'floor', label: 'floor', x: 0, y: 176, w: 560, h: 40, walkX: 280,
     examine: "Heated floor. It warms the exact tile you just stepped off.",
     camLabel: 'HUMAN 51% — please stand still' },
 ];
+
+// -------- Interaction depth (DESIGN rule: every scene needs second verbs) --
+export const DEPTH = {
+  fridgeOpen: [
+    "It sighs open. Inside: cheese-style slices, milk-adjacent beverage, egg product. A refrigerator of adjectives.",
+    "The interior light works flawlessly. Of course it does. The light has a service-level agreement.",
+  ],
+  fridgeClose: "It closes itself. Gently. Offended.",
+  fridgeInside: [
+    "The cheese-style slices are stacked with terrifying precision. Nothing organic stacks like that.",
+    "The jar at the bottom predates my subscription. Possibly my lease. We respect each other's privacy.",
+    "The milk-adjacent beverage is 'adjacent' the way I am adjacent to being asleep right now.",
+  ],
+  sink: [
+    "Filtered. Sparkling. Legal disclaimer. I choose disclaimer — it's the only honest one.",
+    "The tap suggests I hydrate proactively. The tap can mind its own business.",
+  ],
+  window: [
+    "I crack the window. For a moment the rain gets loud and honest.",
+    "Cold air. Real weather. No subscription tier.",
+  ],
+  hatch: [
+    "I knock on the hatch. Somewhere in the network, a drone flinches.",
+    "A slip prints out: RATE YOUR DELIVERY. I rate it: one moosh out of five.",
+  ],
+  mooshPokes: [
+    "It yields. It reforms. It remembers.",
+    "Poking it violates several terms of service. Mine, not its.",
+    "It's warm. I wish I didn't know that.",
+    "We've bonded now. I hate that we've bonded.",
+  ],
+  sockPickup: "Reunited. Well — halfway. The other one entered the laundry-as-a-service pipeline in March.",
+};
 
 export const PARSLEY = {
   pickupLine: "Zosia pockets a sprig of immortal parsley. It has outlived three governments.",

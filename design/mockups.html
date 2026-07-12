@@ -1,0 +1,276 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+body{background:#111;margin:0;display:flex;flex-direction:column;gap:20px;padding:20px}
+canvas{width:1280px;height:720px;image-rendering:pixelated}
+</style></head><body>
+<canvas id="m1" width="1280" height="720"></canvas>
+<canvas id="m2" width="1280" height="720"></canvas>
+<canvas id="m3" width="1280" height="720"></canvas>
+<script>
+// ============ shared helpers ============
+const BAYER=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
+function mk(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.imageSmoothingEnabled=false;return[c,x];}
+function dith(c,x,y,w,h,c1,c2,horiz){c.fillStyle=c1;c.fillRect(x,y,w,h);c.fillStyle=c2;
+ for(let j=0;j<h;j++)for(let i=0;i<w;i++){const t=horiz?i/w:j/h;
+  if(t*16>BAYER[(y+j)&3][(x+i)&3]+0.5)c.fillRect(x+i,y+j,1,1);}}
+function spk(c,x,y,w,h,col,d,seed){let s=seed||7;const r=()=>(s=(s*16807)%2147483647)/2147483647;
+ c.fillStyle=col;for(let i=0;i<w*h*d;i++)c.fillRect((x+r()*w)|0,(y+r()*h)|0,1,1);}
+function up(dst,src,scale,ox,oy){const d=dst.getContext('2d');d.imageSmoothingEnabled=false;
+ d.drawImage(src,0,0,src.width,src.height,ox||0,oy||0,src.width*scale,src.height*scale);}
+
+// smooth-character helper (mixel: drawn hi-res, composited over pixel world)
+function roundRect(x2,a,b,w,h,r,col){x2.fillStyle=col;x2.beginPath();x2.roundRect(a,b,w,h,r);x2.fill();}
+
+// =====================================================================
+// DIRECTION 1 — SHOWROOM (Frutiger Ruin): daylight porcelain retrofuturism
+// =====================================================================
+(function(){
+ const W=420,H=216,[lo,c]=mk(W,H);
+ // porcelain wall: near-white with cool pastel gradient + panel seams
+ dith(c,0,0,W,150,'#eef3f2','#cfe2e4');
+ c.fillStyle='#ffffff';for(let i=0;i<5;i++)c.fillRect(20+i*84,8,60,3); // ceiling light coves
+ c.fillStyle='#bcd4d6';for(let i=1;i<6;i++)c.fillRect(i*70,0,1,150);   // seams
+ // floor: glossy mint-grey with reflection sheen
+ dith(c,0,150,W,66,'#cfe0da','#a8c4bc');
+ dith(c,0,150,W,10,'#ffffff','#cfe0da');
+ // grime of the ruin: hairline cracks + stains (the story in the porcelain)
+ c.strokeStyle='#9db4ae';c.lineWidth=1;
+ c.beginPath();c.moveTo(58,64);c.lineTo(64,86);c.lineTo(61,102);c.stroke();
+ spk(c,0,140,W,70,'#8fa8a0',0.008,5);
+ // WINDOW: bright overcast megacity, pastel smog, giant soft billboard
+ c.fillStyle='#ffffff';c.fillRect(292,22,104,96); c.fillStyle='#dff0f4';c.fillRect(298,28,92,84);
+ dith(c,298,28,92,44,'#cfeaf4','#f4e9d8'); // sky gradient peach horizon
+ c.fillStyle='#b8ccd4';[[300,60,16,52],[320,72,14,40],[338,54,18,58],[360,78,12,34],[374,64,14,48]].forEach(b=>c.fillRect(...b));
+ c.fillStyle='#e8f4f8';[[303,66],[341,60],[344,70],[363,82]].forEach(p=>c.fillRect(p[0],p[1],3,4));
+ // billboard: smiling gradient orb logo
+ c.fillStyle='#fff';c.fillRect(322,34,40,20);
+ dith(c,324,36,36,16,'#7cc4f0','#f0a8c0',true);
+ c.fillStyle='#fff';c.fillRect(336,40,3,3);c.fillRect(346,40,3,3);c.fillRect(338,46,8,2);
+ c.fillStyle='#a8c4cc';c.fillRect(342,54,2,64); c.fillRect(298,68,92,2);
+ // FRIDGE: giant rounded white pod w/ friendly screen (2002 Apple energy)
+ c.fillStyle='#d4e4e0';c.fillRect(132,46,58,108);
+ dith(c,134,48,54,104,'#ffffff','#dcebe8',true);
+ c.fillStyle='#fff';c.fillRect(136,50,10,100); // gloss streak
+ c.fillStyle='#7cc4f0';c.fillRect(158,66,22,16); // friendly screen
+ c.fillStyle='#fff';c.fillRect(162,70,4,4);c.fillRect(170,70,4,4);c.fillRect(164,77,8,2);
+ c.fillStyle='#9db8b4';c.fillRect(150,100,26,3); // handle
+ spk(c,134,120,54,30,'#c4d4d0',0.03,9); // lower grime
+ // POSTER: pastel gradient ad, peeling corner
+ c.fillStyle='#fff';c.fillRect(216,34,54,66);
+ dith(c,219,37,48,60,'#b8e0f0','#f0c8d8');
+ c.fillStyle='#5a7a8a';c.font='7px monospace';c.fillText('EAT.',228,50);c.fillText('RATE.',228,62);c.fillText('REPEAT.',224,74);
+ c.fillStyle='#e8f0f4';c.beginPath();c.moveTo(270,34);c.lineTo(258,34);c.lineTo(270,48);c.fill(); // peel
+ // DELIVERY HATCH: rounded aqua pod in wall
+ c.fillStyle='#cfe4e8';c.fillRect(18,56,54,60);
+ dith(c,22,60,46,52,'#eef8f8','#cfe4e8');
+ c.fillStyle='#0a1418';c.fillRect(30,92,30,8);
+ c.fillStyle='#7cc4f0';c.fillRect(30,66,30,3);
+ c.fillStyle='#f0a8c0';c.fillRect(56,64,8,8); // status light
+ // TABLE: white oval tulip table
+ c.fillStyle='#b8ccc8';c.fillRect(214,148,100,5);
+ dith(c,212,142,104,7,'#ffffff','#dcebe8');
+ c.fillStyle='#d4e4e0';c.fillRect(258,155,12,26);c.fillRect(246,181,36,5);
+ // MOOSH (same gross blob — reads even grosser against porcelain)
+ c.fillStyle='#e8e4d8';c.fillRect(224,132,36,10);
+ c.fillStyle='#7a7f63';c.fillRect(228,122,26,12);c.fillStyle='#93987b';c.fillRect(232,118,14,8);
+ c.fillStyle='#c98a80';c.fillRect(240,122,5,3);c.fillStyle='#aab088';c.fillRect(234,120,4,2);
+ // PHONE: vivid blue glass slab, halo
+ const g=c.createRadialGradient(288,130,2,288,130,26);g.addColorStop(0,'rgba(60,150,255,0.55)');g.addColorStop(1,'rgba(60,150,255,0)');
+ c.fillStyle=g;c.fillRect(262,104,52,52);
+ c.fillStyle='#0a2038';c.fillRect(281,118,14,24);c.fillStyle='#4aa0ff';c.fillRect(283,120,10,20);
+ // scale up world
+ const cv=document.getElementById('m1');up(cv,lo,1280/W);
+ const x2=cv.getContext('2d');x2.imageSmoothingEnabled=true;
+ // CHARACTER — designer-toy mixel: bigger round head, clean flats, soft shadow
+ const S=1280/W, px=118*S, py=196*S, u=S*0.46;
+ x2.fillStyle='rgba(90,120,116,0.30)';x2.beginPath();x2.ellipse(px,py,26*u,6*u,0,0,7);x2.fill();
+ roundRect(x2,px-16*u,py-58*u,32*u,34*u,10*u,'#ff7a5e');            // coral smock
+ roundRect(x2,px-22*u,py-54*u,8*u,26*u,4*u,'#e85e44');              // arms
+ roundRect(x2,px+14*u,py-54*u,8*u,26*u,4*u,'#e85e44');
+ roundRect(x2,px-12*u,py-26*u,9*u,22*u,4*u,'#4a6a78');              // legs teal
+ roundRect(x2,px+3*u,py-26*u,9*u,22*u,4*u,'#4a6a78');
+ roundRect(x2,px-14*u,py-6*u,12*u,6*u,3*u,'#fff');                  // sneakers!
+ roundRect(x2,px+2*u,py-6*u,12*u,6*u,3*u,'#fff');
+ x2.fillStyle='#ffd9b8';x2.beginPath();x2.arc(px,py-72*u,17*u,0,7);x2.fill(); // head big+round
+ x2.fillStyle='#2e2226';x2.beginPath();x2.arc(px,py-76*u,17.5*u,Math.PI*0.95,Math.PI*2.05);x2.fill(); // bob
+ x2.fillRect(px-17*u,py-78*u,6*u,16*u);x2.fillRect(px+11*u,py-78*u,6*u,16*u);
+ x2.fillStyle='#2e2226';x2.beginPath();x2.arc(px-6*u,py-70*u,2.2*u,0,7);x2.fill();x2.beginPath();x2.arc(px+6*u,py-70*u,2.2*u,0,7);x2.fill();
+ x2.strokeStyle='#d88a6a';x2.lineWidth=1.6*u;x2.beginPath();x2.moveTo(px-4*u,py-63*u);x2.lineTo(px+4*u,py-63*u);x2.stroke();
+ x2.fillStyle='rgba(255,255,255,0.85)';x2.beginPath();x2.arc(px-9*u,py-82*u,3*u,0,7);x2.fill(); // gloss glint on hair
+ // caption UI sample: airy card w/ blue text
+ x2.fillStyle='rgba(255,255,255,0.92)';x2.beginPath();x2.roundRect(340,624,600,64,14);x2.fill();
+ x2.fillStyle='#7ba4b0';x2.font='11px Verdana';x2.fillText('ZOSIA',362,646);
+ x2.fillStyle='#3a5a68';x2.font='italic 17px Georgia';x2.fillText('Everything here is self-cleaning. Except, apparently, dinner.',362,668);
+ x2.fillStyle='#8ab0ba';x2.font='10px Verdana';x2.fillText('SHOWROOM · frutiger ruin · daylight porcelain retrofuturism',20,706);
+})();
+
+// =====================================================================
+// DIRECTION 2 — CEEFAX NOIR: teletext mosaic broadcast world
+// =====================================================================
+(function(){
+ const W=420,H=216,[lo,c]=mk(W,H);
+ const TT={r:'#ff2222',g:'#22dd44',y:'#ffdd22',b:'#2244ff',m:'#ff44cc',cy:'#22ddee',w:'#e8e8e8',k:'#000000',dk:'#101018'};
+ c.fillStyle=TT.k;c.fillRect(0,0,W,H);
+ // teletext mosaic cells are 2x3 chunks — draw world in coarse mosaic
+ function cell(cx,cy,col){c.fillStyle=col;c.fillRect(cx*4,cy*6,4,6);}
+ // floor: blue mosaic checker
+ for(let cy=26;cy<36;cy++)for(let cx=0;cx<105;cx++)if((cx+cy)%2)cell(cx,cy,'#101a44');else cell(cx,cy,'#0a1230');
+ // wall grid: sparse dark blue dots
+ for(let cy=3;cy<25;cy++)for(let cx=0;cx<105;cx++)if((cx*7+cy*3)%23===0)cell(cx,cy,'#0e1638');
+ // WINDOW: mosaic city in pure teletext primaries
+ for(let cy=4;cy<15;cy++)for(let cx=72;cx<96;cx++)cell(cx,cy,'#000a2a');
+ [[74,10,3,4,TT.b],[78,8,3,6,TT.b],[82,11,4,3,TT.m],[87,7,3,7,TT.b],[91,12,3,2,TT.cy]].forEach(([a,b2,w2,h2,col])=>{
+  for(let j=0;j<h2;j++)for(let i=0;i<w2;i++)cell(a+i,b2+j,col);});
+ [[75,12],[79,9],[88,8],[92,13]].forEach(p=>cell(p[0],p[1],TT.y));
+ c.fillStyle=TT.cy;c.fillRect(72*4,4*6,96,2);c.fillRect(72*4,15*6-2,96,2);
+ // NOODL sign: double-height teletext text
+ c.fillStyle=TT.m;c.font='bold 12px monospace';c.fillText('NOODL∞',312,52);
+ // FRIDGE: white/cyan mosaic appliance
+ for(let cy=8;cy<25;cy++)for(let cx=33;cx<46;cx++)cell(cx,cy,(cx===33||cy===8)?TT.w:'#c8dce0');
+ for(let cy=10;cy<14;cy++)for(let cx=36;cx<43;cx++)cell(cx,cy,TT.cy); // screen
+ c.fillStyle=TT.k;c.fillRect(37*4,11*6,8,3);c.fillRect(40*4,11*6,8,3);
+ for(let cy=16;cy<17;cy++)for(let cx=35;cx<44;cx++)cell(cx,cy,TT.b);
+ // POSTER: yellow-on-red teletext ad block
+ for(let cy=6;cy<15;cy++)for(let cx=53;cx<66;cx++)cell(cx,cy,TT.r);
+ c.fillStyle=TT.y;c.font='bold 8px monospace';
+ c.fillText('EAT.',216,50);c.fillText('RATE.',216,62);c.fillText('REPEAT.',214,74);
+ // HATCH: green service block
+ for(let cy=9;cy<19;cy++)for(let cx=5;cx<17;cx++)cell(cx,cy,(cy===9||cx===5)?TT.g:'#0a3a1a');
+ c.fillStyle=TT.g;c.font='6px monospace';c.fillText('NOURLY',26,102);
+ c.fillStyle=TT.k;c.fillRect(7*4,15*6,36,8);
+ // TABLE: yellow mosaic
+ for(let cy=23;cy<24;cy++)for(let cx=52;cx<79;cx++)cell(cx,cy,TT.y);
+ for(let cy=24;cy<30;cy++)for(let cx of[54,76])cell(cx,cy,'#8a7a22');
+ // MOOSH: green mosaic blob w/ magenta glisten
+ for(const[a,b2]of[[60,20],[61,20],[62,20],[59,21],[60,21],[61,21],[62,21],[63,21],[60,22],[61,22],[62,22],[63,22]])cell(a,b2,'#4a7a3a');
+ cell(61,21,TT.m);cell(63,22,'#6a9a5a');
+ // PHONE: cyan block + glow
+ const g=c.createRadialGradient(272,132,2,272,132,24);g.addColorStop(0,'rgba(34,221,238,0.5)');g.addColorStop(1,'rgba(34,221,238,0)');
+ c.fillStyle=g;c.fillRect(248,108,48,48);
+ for(let cy=20;cy<23;cy++)for(let cx=67;cx<70;cx++)cell(cx,cy,TT.cy);
+ // header row — the broadcast chrome IS the diegesis
+ c.fillStyle=TT.k;c.fillRect(0,0,W,10);
+ c.fillStyle=TT.w;c.font='7px monospace';c.fillText('P207',4,8);
+ c.fillStyle=TT.g;c.fillText('GLITCH',26,8);
+ c.fillStyle=TT.y;c.fillText('SAT 12 JUL',56,8);
+ c.fillStyle=TT.w;c.fillText('02:07/07',110,8);
+ c.fillStyle=TT.cy;c.fillText('LIVE',150,8);
+ const cv=document.getElementById('m2');up(cv,lo,1280/W);
+ const x2=cv.getContext('2d');
+ // scanlines + phosphor
+ x2.fillStyle='rgba(0,0,0,0.22)';for(let y=0;y<720;y+=3)x2.fillRect(0,y,1280,1);
+ x2.fillStyle='rgba(120,220,255,0.05)';x2.fillRect(0,0,1280,720);
+ // CHARACTER: smooth noir figure — trench coat, high contrast rim (max mixel clash)
+ x2.imageSmoothingEnabled=true;
+ const S=1280/W,px=150*S,py=196*S,u=S*0.48;
+ x2.fillStyle='rgba(34,221,238,0.25)';x2.beginPath();x2.ellipse(px,py,22*u,5*u,0,0,7);x2.fill();
+ roundRect(x2,px-14*u,py-60*u,28*u,44*u,7*u,'#d8d4c8');            // trench
+ roundRect(x2,px-18*u,py-56*u,7*u,30*u,4*u,'#b8b4a8');
+ roundRect(x2,px+11*u,py-56*u,7*u,30*u,4*u,'#b8b4a8');
+ x2.fillStyle='#8a8678';x2.fillRect(px-14*u,py-40*u,28*u,2.5*u);   // belt
+ roundRect(x2,px-10*u,py-16*u,8*u,14*u,3*u,'#2a2e38');
+ roundRect(x2,px+2*u,py-16*u,8*u,14*u,3*u,'#2a2e38');
+ x2.fillStyle='#f0c8a0';x2.beginPath();x2.arc(px,py-70*u,13*u,0,7);x2.fill();
+ x2.fillStyle='#3a3430';x2.beginPath();x2.ellipse(px,py-79*u,15*u,6*u,0,Math.PI,0);x2.fill(); // hat brim+crown
+ x2.fillRect(px-9*u,py-92*u,18*u,13*u);
+ x2.fillStyle='#22ddee';x2.fillRect(px-9*u,py-83*u,18*u,2*u);       // cyan hat band (phosphor accent)
+ x2.fillStyle='#2a2420';x2.beginPath();x2.arc(px-5*u,py-69*u,1.8*u,0,7);x2.fill();x2.beginPath();x2.arc(px+5*u,py-69*u,1.8*u,0,7);x2.fill();
+ x2.strokeStyle='rgba(34,221,238,0.8)';x2.lineWidth=1.2*u;         // phosphor rim light
+ x2.beginPath();x2.arc(px,py-70*u,13.4*u,-0.6,0.9);x2.stroke();
+ // caption UI sample: teletext subtitle block
+ x2.fillStyle='#000';x2.fillRect(280,632,720,54);
+ x2.fillStyle='#ffdd22';x2.font='bold 22px monospace';x2.fillText('MAREK: THE LAW IS A VENDING MACHINE', 300,660);
+ x2.fillStyle='#22dd44';x2.font='bold 15px monospace';x2.fillText('AND SOMEBODY SHOOK IT.',300,680);
+ x2.fillStyle='#8aa';x2.font='10px Verdana';x2.fillText('CEEFAX NOIR · teletext mosaic broadcast world · smooth noir figures',20,706);
+})();
+
+// =====================================================================
+// DIRECTION 3 — BLUEPRINT: the annotated archive (cyanotype schematic)
+// =====================================================================
+(function(){
+ const W=420,H=216,[lo,c]=mk(W,H);
+ // prussian paper wash
+ dith(c,0,0,W,H,'#0c2f52','#0a2340');
+ spk(c,0,0,W,H,'#0e3a63',0.02,13);
+ // faint grid
+ c.fillStyle='rgba(120,180,220,0.10)';
+ for(let x=0;x<W;x+=20)c.fillRect(x,0,1,H);
+ for(let y=0;y<H;y+=20)c.fillRect(0,y,W,1);
+ const INK='#bfe3f7', DIM='rgba(150,205,235,0.55)', OCH='#f0b23d';
+ function line(a,b,d,e){c.strokeStyle=INK;c.lineWidth=1;c.beginPath();c.moveTo(a+0.5,b+0.5);c.lineTo(d+0.5,e+0.5);c.stroke();}
+ function box(a,b,w2,h2){c.strokeStyle=INK;c.lineWidth=1;c.strokeRect(a+0.5,b+0.5,w2,h2);}
+ function hatch(a,b,w2,h2){c.save();c.beginPath();c.rect(a,b,w2,h2);c.clip();c.strokeStyle=DIM;
+  for(let i=-h2;i<w2;i+=5){c.beginPath();c.moveTo(a+i,b+h2);c.lineTo(a+i+h2,b);c.stroke();}c.restore();}
+ function dim(a,b,d,e,label){c.strokeStyle=DIM;c.setLineDash([2,2]);c.beginPath();c.moveTo(a,b);c.lineTo(d,e);c.stroke();c.setLineDash([]);
+  if(label){c.fillStyle=OCH;c.font='6px monospace';c.fillText(label,(a+d)/2-10,(b+e)/2-3);}}
+ // floor line + horizon
+ line(0,150,W,150); c.fillStyle=DIM;c.font='5px monospace';c.fillText('FL. +0.00',6,147);
+ // WINDOW schematic
+ box(292,22,104,96);box(298,28,92,84);line(344,28,344,112);line(298,70,390,70);
+ hatch(292,22,6,96); dim(292,16,396,16,'W=104');
+ c.fillStyle=OCH;c.font='7px monospace';c.fillText('RAIN: PERSISTENT',304,127);
+ // city as dotted elevation
+ c.strokeStyle=DIM;[[300,96,14,16],[318,86,12,26],[334,92,16,20],[354,80,12,32],[370,90,16,22]].forEach(([a,b,w2,h2])=>{c.setLineDash([1,2]);c.strokeRect(a+0.5,b+0.5,w2,h2);c.setLineDash([]);});
+ // FRIDGE schematic w/ section cut + callout
+ box(132,46,58,108); line(132,100,190,100); hatch(132,46,58,8);
+ box(150,64,24,18); line(150,73,174,73); // screen detail
+ c.strokeStyle=INK;c.beginPath();c.arc(161,110,8,0,7);c.stroke(); // handle circle detail
+ line(190,60,214,30); c.fillStyle=OCH;c.font='7px monospace';
+ c.fillText('FRIDGE (SMART, ALLEGEDLY)',196,20);c.fillText('ORDERS: AUTONOMOUS · AGREEMENT: NONE',196,29);
+ // HATCH schematic
+ box(18,56,54,60); box(28,88,34,12); hatch(18,56,54,6);
+ line(45,56,45,50); c.fillStyle=OCH;c.font='7px monospace';c.fillText('SERVICE PORTAL ★★★★★',6,46);
+ c.fillStyle=DIM;c.font='6px monospace';c.fillText('(RATED BY DRONES)',14,126);
+ // POSTER as figure reference
+ box(216,84,44,40); line(216,104,260,104); line(238,84,238,124);
+ c.fillStyle=OCH;c.font='7px monospace';c.fillText('FIG.3 — ADVERTISEMENT',212,80);
+ // TABLE section
+ line(214,142,316,142); line(214,146,316,146); hatch(214,142,102,4);
+ line(262,146,262,182); line(258,182,266,182);
+ dim(214,190,316,190,'L=102');
+ // MOOSH — the ONLY solid-rendered world object: full color blob on the schematic
+ c.fillStyle='#7a7f63';c.fillRect(228,124,26,12);c.fillStyle='#93987b';c.fillRect(232,120,14,8);
+ c.fillStyle='#c98a80';c.fillRect(240,124,5,3);c.fillStyle='#aab088';c.fillRect(234,122,4,2);
+ c.strokeStyle=OCH;c.beginPath();c.arc(241,128,16,0,7);c.stroke(); // ochre inspection circle
+ line(238,140,196,168); c.fillStyle=OCH;c.font='bold 7px monospace';
+ c.fillText('SPECIMEN: "DINNER" — CLASS: UNRECOGNIZED',126,176);c.fillText('IS IT ALIVE? — PENDING',126,186);
+ // PHONE: glowing solid (screens are real; the world is a diagram)
+ const g=c.createRadialGradient(276,132,2,276,132,24);g.addColorStop(0,'rgba(140,220,255,0.6)');g.addColorStop(1,'rgba(140,220,255,0)');
+ c.fillStyle=g;c.fillRect(252,108,48,48);
+ c.fillStyle='#061422';c.fillRect(269,118,14,24);c.fillStyle='#8cdcff';c.fillRect(271,120,10,20);
+ // title block (bottom right) — the sheet chrome
+ c.strokeStyle=INK;c.strokeRect(300.5,168.5,112,40);
+ line(300,182,412,182); line(300,196,412,196); line(368,168,368,208);
+ c.fillStyle=INK;c.font='6px monospace';
+ c.fillText('THE BIG GLITCH',304,178);c.fillText('KITCHEN, 02:07',304,192);c.fillText('DO NOT SCALE',304,205);
+ c.fillStyle=OCH;c.fillText('SHEET 1',372,178);c.fillText('OF',372,192);c.fillText('555,789',372,205);
+ const cv=document.getElementById('m3');up(cv,lo,1280/W);
+ const x2=cv.getContext('2d');x2.imageSmoothingEnabled=true;
+ // CHARACTER: warm full-color smooth mixel — the only living thing on the sheet
+ const S=1280/W,px=64*S,py=196*S,u=S*0.46;
+ x2.fillStyle='rgba(240,178,61,0.25)';x2.beginPath();x2.ellipse(px,py,24*u,5*u,0,0,7);x2.fill();
+ roundRect(x2,px-15*u,py-56*u,30*u,36*u,8*u,'#e0704a');           // warm rust sweater
+ roundRect(x2,px-21*u,py-52*u,7*u,28*u,4*u,'#c25a38');
+ roundRect(x2,px+14*u,py-52*u,7*u,28*u,4*u,'#c25a38');
+ x2.fillStyle='#f7d9b5';x2.beginPath();x2.arc(px-17.5*u,py-23*u,3.4*u,0,7);x2.fill();x2.beginPath();x2.arc(px+17.5*u,py-23*u,3.4*u,0,7);x2.fill();
+ roundRect(x2,px-11*u,py-20*u,9*u,17*u,4*u,'#3d4a5c');
+ roundRect(x2,px+2*u,py-20*u,9*u,17*u,4*u,'#3d4a5c');
+ roundRect(x2,px-13*u,py-4*u,11*u,5*u,2*u,'#20242e');
+ roundRect(x2,px+2*u,py-4*u,11*u,5*u,2*u,'#20242e');
+ x2.fillStyle='#f7d9b5';x2.beginPath();x2.arc(px,py-68*u,14*u,0,7);x2.fill();
+ x2.fillStyle='#241a16';x2.beginPath();x2.arc(px,py-72*u,14.6*u,Math.PI*0.92,Math.PI*2.08);x2.fill();
+ x2.fillRect(px-14.5*u,py-74*u,5*u,15*u);x2.fillRect(px+9.5*u,py-74*u,5*u,15*u);
+ x2.fillStyle='#241a16';x2.beginPath();x2.arc(px-5*u,py-66*u,2*u,0,7);x2.fill();x2.beginPath();x2.arc(px+5*u,py-66*u,2*u,0,7);x2.fill();
+ x2.strokeStyle='#c98a68';x2.lineWidth=1.6*u;x2.beginPath();x2.moveTo(px-4*u,py-60*u);x2.lineTo(px+4*u,py-60*u);x2.stroke();
+ // ochre annotation arrow pointing at her — the archive annotates the human
+ x2.strokeStyle='#f0b23d';x2.lineWidth=2;x2.setLineDash([6,5]);
+ x2.beginPath();x2.moveTo(px+120,py-300);x2.lineTo(px+8*u,py-80*u);x2.stroke();x2.setLineDash([]);
+ x2.fillStyle='#f0b23d';x2.font='15px monospace';x2.fillText('THE TENANT (NOT TO SCALE)',px+40,py-308);
+ // caption UI sample: archive margin note
+ x2.fillStyle='rgba(6,20,34,0.92)';x2.beginPath();x2.roundRect(330,626,640,60,3);x2.fill();
+ x2.strokeStyle='#f0b23d';x2.strokeRect(330.5,626.5,640,60);
+ x2.fillStyle='#f0b23d';x2.font='11px monospace';x2.fillText('MARGIN NOTE — the book',352,646);
+ x2.fillStyle='#bfe3f7';x2.font='italic 17px Georgia';x2.fillText('Somewhere, it is raining. Somewhere, dinner has arrived.',352,670);
+ x2.fillStyle='#6a92b0';x2.font='10px Verdana';x2.fillText('BLUEPRINT · the annotated archive · the world is a diagram, the humans are real',20,706);
+})();
+</script></body></html>

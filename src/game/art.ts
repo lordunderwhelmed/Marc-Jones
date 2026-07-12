@@ -292,7 +292,7 @@ export function drawRoom(): HTMLCanvasElement {
 
   // baseboard sockets, one sock nearby (where ARE they)
   c.fillStyle = PAL.metalD; c.fillRect(140, 142, 8, 6); c.fillRect(460, 142, 8, 6);
-  c.fillStyle = '#8a8266'; c.fillRect(96, 168, 10, 4); c.fillRect(99, 166, 5, 3); // one (1) sock
+
 
   // vignette
   const vg = c.createLinearGradient(0, 0, 0, H);
@@ -339,16 +339,34 @@ export function drawShaft(): HTMLCanvasElement {
 
 // ------------------------------------------------------------- plant / moosh
 export function drawPlant(hasParsley: boolean): HTMLCanvasElement {
-  const [cv, c] = canvas(30, 26);
-  c.fillStyle = PAL.leaf;
-  c.fillRect(8, 12, 3, 10); c.fillRect(14, 8, 3, 14); c.fillRect(20, 12, 3, 10);
-  c.fillRect(5, 16, 3, 6); c.fillRect(23, 16, 3, 6);
-  c.fillStyle = PAL.leafL;
-  c.fillRect(9, 12, 1, 8); c.fillRect(15, 8, 1, 10); c.fillRect(21, 12, 1, 8);
+  const [cv, c] = canvas(36, 32);
+  // fern: arcing fronds with paired leaflets, fanning from the pot mouth
+  const fronds: [number, number][][] = [
+    [[17, 28], [15, 22], [12, 16], [8, 11], [4, 8]],
+    [[17, 28], [16, 21], [14, 14], [12, 8], [11, 3]],
+    [[18, 28], [19, 20], [20, 13], [22, 7], [25, 3]],
+    [[18, 28], [21, 22], [25, 17], [29, 13], [33, 11]],
+    [[17, 28], [13, 24], [8, 21], [3, 20]],
+    [[18, 28], [23, 25], [28, 23], [33, 23]],
+  ];
+  for (const f of fronds) {
+    for (let i = 0; i < f.length; i++) {
+      const [x, y] = f[i];
+      c.fillStyle = PAL.leaf; c.fillRect(x, y, 2, 2);
+      if (i > 0) { // paired leaflets off the stem
+        c.fillStyle = PAL.leafL;
+        c.fillRect(x - 2, y - 1, 2, 1); c.fillRect(x + 2, y + 1, 2, 1);
+      }
+    }
+    const tip = f[f.length - 1];
+    c.fillStyle = PAL.leafL; c.fillRect(tip[0], tip[1], 2, 1);
+  }
   if (hasParsley) {
-    c.fillStyle = PAL.leafL;
-    c.fillRect(11, 4, 2, 2); c.fillRect(13, 2, 2, 2); c.fillRect(15, 4, 2, 2); c.fillRect(12, 6, 4, 3);
-    c.fillStyle = PAL.parsley; c.fillRect(13, 3, 2, 2);
+    // the immortal parsley: a bright curly crown, unmistakable
+    c.fillStyle = PAL.parsley;
+    c.fillRect(15, 0, 3, 2); c.fillRect(19, 1, 3, 2); c.fillRect(12, 2, 3, 2);
+    c.fillRect(16, 3, 4, 3); c.fillRect(21, 4, 2, 2);
+    c.fillStyle = PAL.leafL; c.fillRect(17, 6, 2, 4);
   }
   return cv;
 }
@@ -374,6 +392,46 @@ export function drawMoosh(garnished: boolean): HTMLCanvasElement {
   return cv;
 }
 
+// ------------------------------------------------------------- sock sprite
+export function drawSock(): HTMLCanvasElement {
+  const [cv, c] = canvas(14, 9);
+  c.fillStyle = '#8a8266';
+  c.fillRect(1, 2, 9, 4); c.fillRect(7, 5, 6, 3);
+  c.fillStyle = '#a39a78'; c.fillRect(1, 2, 9, 1);
+  c.fillStyle = '#6e6650'; c.fillRect(1, 5, 6, 1);
+  return cv;
+}
+
+// ------------------------------------------------- open fridge overlay
+// drawn at (146,46): swung-open door (left) + glowing interior with the
+// adjectives: cheese-style, milk-adjacent, egg product.
+export function drawFridgeOpen(): HTMLCanvasElement {
+  const [cv, c] = canvas(84, 106);
+  // door, swung open toward us (left), foreshortened
+  dither(c, 0, 2, 26, 102, PAL.fridgeL, PAL.fridge, true);
+  c.fillStyle = PAL.fridgeD; c.fillRect(0, 2, 2, 102); c.fillRect(0, 52, 26, 2);
+  c.fillStyle = PAL.metal; c.fillRect(20, 30, 3, 20);
+  // interior cavity — the only cold-lit box in the room besides the phone
+  c.fillStyle = '#0d1216'; c.fillRect(30, 2, 52, 102);
+  dither(c, 32, 4, 48, 98, '#2a3a44', '#16222a');
+  c.fillStyle = '#8ad8ff'; c.fillRect(33, 6, 2, 8); // interior lamp
+  // shelves
+  c.fillStyle = '#4a5a64'; c.fillRect(32, 36, 48, 2); c.fillRect(32, 66, 48, 2);
+  // cheese-style slices (a neat, suspicious stack)
+  c.fillStyle = '#e8c04a'; c.fillRect(36, 28, 14, 7);
+  c.fillStyle = '#c9a232'; c.fillRect(36, 33, 14, 2);
+  // milk-adjacent beverage
+  c.fillStyle = '#d8e0e4'; c.fillRect(58, 20, 10, 16);
+  c.fillStyle = '#8aa4b0'; c.fillRect(58, 20, 10, 4);
+  // egg product (a box, no further questions)
+  c.fillStyle = '#b0a488'; c.fillRect(38, 54, 18, 12);
+  c.fillStyle = '#8a8066'; c.fillRect(38, 54, 18, 3);
+  // one (1) very old jar at the bottom, glowing faintly. do not ask.
+  c.fillStyle = '#5a7a4a'; c.fillRect(60, 88, 12, 14);
+  c.fillStyle = '#7a9a5a'; c.fillRect(62, 90, 3, 4);
+  return cv;
+}
+
 // ------------------------------------------------- Zosia, the smooth mixel
 // Drawn at 5× (100×210) with curves and soft shading, rendered with linear
 // filtering at 20×42 world units — a Thimbleweed-school character: crisp,
@@ -389,7 +447,8 @@ export function drawZosia(): HTMLCanvasElement[] {
     const cv = document.createElement('canvas'); cv.width = 100; cv.height = 210;
     const c = cv.getContext('2d')!;
     c.imageSmoothingEnabled = true;
-    const walk = f >= 2; const wf = f - 2;
+    if (f >= 2) { drawZosiaSide(c, f - 2, { SKIN, SKIN_SH, HAIR, HAIR_RIM, SWTR, SWTR_SH, PANT, SHOE }); frames.push(cv); continue; }
+    const walk = false; const wf = 0;
     const swing = walk ? [1, 0, -1, 0][wf] : 0;      // -1..1
     const bob = walk ? (wf % 2 === 0 ? 4 : 0) : 0;
     const y0 = bob;
@@ -472,6 +531,57 @@ export function drawGrain(w: number, h: number): HTMLCanvasElement {
     c.beginPath(); c.moveTo(fx, fy); c.lineTo(fx + rnd() * 8 - 4, fy + rnd() * 4 - 2); c.stroke();
   }
   return cv;
+}
+
+// side profile (faces RIGHT; runtime mirrors for left) — the mixel turn
+function drawZosiaSide(c: CanvasRenderingContext2D, wf: number,
+  P: { SKIN: string; SKIN_SH: string; HAIR: string; HAIR_RIM: string; SWTR: string; SWTR_SH: string; PANT: string; SHOE: string }) {
+  const swing = [1, 0, -1, 0][wf];
+  const bob = wf % 2 === 0 ? 3 : 0;
+  const y0 = bob;
+  const s = swing * 15;
+  const rr = (x: number, y: number, w: number, h: number, r: number, col: string) => {
+    c.fillStyle = col; c.beginPath();
+    // @ts-ignore
+    c.roundRect(x, y, w, h, r); c.fill();
+  };
+  // back leg (behind, darker) strides opposite the front leg
+  rr(42 - s, 142, 15, 54, 7, '#262a20');
+  rr(38 - s, 190, 22, 12, 5, '#101208');
+  // back arm swings opposite
+  rr(34 - s * 0.7, y0 + 72, 13, 54, 7, P.SWTR_SH);
+  // torso: narrower in profile, slight lean into the walk
+  rr(30, y0 + 62, 40, 88, 12, P.SWTR);
+  c.fillStyle = P.SWTR_SH; c.beginPath();
+  // @ts-ignore
+  c.roundRect(30, y0 + 132, 40, 18, { bl: 12, br: 12 } as never); c.fill();
+  // front leg
+  rr(46 + s, 142, 15, 56, 7, P.PANT);
+  rr(46 + s, 192, 24, 12, 5, P.SHOE);
+  // front arm
+  rr(48 + s * 0.8, y0 + 70, 13, 58, 7, P.SWTR);
+  rr(50 + s * 0.8, y0 + 122, 11, 11, 5, P.SKIN);
+  // head in profile
+  c.fillStyle = P.SKIN; c.beginPath(); c.arc(52, y0 + 38, 24, 0, Math.PI * 2); c.fill();
+  c.fillStyle = P.SKIN; c.beginPath(); c.arc(74, y0 + 44, 4.5, 0, Math.PI * 2); c.fill(); // nose
+  c.fillStyle = P.SKIN_SH; c.beginPath(); c.arc(50, y0 + 42, 24, 0.45 * Math.PI, 0.85 * Math.PI); c.fill();
+  // hair: bob wraps the back of the head, fringe over the brow
+  c.fillStyle = P.HAIR;
+  c.beginPath(); c.arc(46, y0 + 32, 26, Math.PI * 0.42, Math.PI * 1.75); c.fill();
+  c.fillRect(22, y0 + 30, 22, 36);
+  c.beginPath(); c.moveTo(44, y0 + 12); c.quadraticCurveTo(66, y0 + 10, 72, y0 + 26);
+  c.quadraticCurveTo(60, y0 + 20, 48, y0 + 24); c.fill();
+  // amber rim on the hair, trailing edge
+  c.strokeStyle = P.HAIR_RIM; c.lineWidth = 2.5;
+  c.beginPath(); c.arc(46, y0 + 32, 24.5, Math.PI * 1.55, Math.PI * 1.95); c.stroke();
+  // one profile eye + brow + mouth
+  c.fillStyle = '#221812';
+  c.beginPath(); c.ellipse(64, y0 + 39, 4, 5.5, 0, 0, Math.PI * 2); c.fill();
+  c.fillStyle = 'rgba(255,255,255,0.85)'; c.fillRect(65.5, y0 + 35.5, 2.2, 2.2);
+  c.strokeStyle = P.HAIR; c.lineWidth = 2;
+  c.beginPath(); c.moveTo(58, y0 + 30); c.lineTo(70, y0 + 31); c.stroke();
+  c.strokeStyle = '#a06a48'; c.lineWidth = 2.6;
+  c.beginPath(); c.moveTo(68, y0 + 52); c.lineTo(74, y0 + 51); c.stroke();
 }
 
 // glow

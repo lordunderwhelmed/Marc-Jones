@@ -52,6 +52,14 @@ export const audio = {
     holdGain = ctx.createGain(); holdGain.gain.value = 0.0; holdGain.connect(master);
   },
 
+  rainBoost(seconds = 3) {
+    if (!ctx) return;
+    const t = ctx.currentTime;
+    rainGain.gain.cancelScheduledValues(t);
+    rainGain.gain.linearRampToValueAtTime(0.16, t + 0.4);
+    rainGain.gain.linearRampToValueAtTime(0.05, t + seconds);
+  },
+
   holdMusic(on: boolean) {
     if (!ctx) return;
     holdGain.gain.linearRampToValueAtTime(on ? 0.05 : 0.0, ctx.currentTime + 0.4);
