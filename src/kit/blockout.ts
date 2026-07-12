@@ -238,6 +238,7 @@ export async function bootBlockout(scene: Scene) {
   if (sub) sub.textContent = `blockout playtest · ${scene.title}`;
   $('phone').addEventListener('click', (e) => { if (e.target === $('phone')) interp.externalClose(); });
   $('phoneClose').addEventListener('click', () => interp.externalClose());
+  $('phoneExit').addEventListener('click', () => interp.externalClose());
 
   // debug hook (playwright playthroughs)
   (window as unknown as Record<string, unknown>).__bg = { view: () => ({ camX, viewW }) };

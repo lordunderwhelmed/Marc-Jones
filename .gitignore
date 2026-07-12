@@ -1,2 +1,9 @@
 node_modules/
 dist/
+
+# local test artifacts (see TESTING.md)
+tests/__results__/
+tests/__report__/
+tests/__screens__/
+test-results/
+playwright-report/

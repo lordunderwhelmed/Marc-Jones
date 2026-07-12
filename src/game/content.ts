@@ -128,7 +128,14 @@ export const CHAT = {
     "I'm seeing an UNRECOGNIZED OBJECT. Nourly⁺ cannot refund objects. Nourly⁺ refunds *meals*. Meals look like meals!",
     "Between us? The classifier grades on presentation. I've already said too much. 🤫",
   ],
-  notFood: (label: string) => `That's ${label ? 'a ' + label.split('·')[0].trim() : 'not the item'}. Flattering! But I need the delivered item.`,
+  // GRAVY quotes the classifier's *noun*, never its raw confidence score —
+  // a leaked "91%" in a chat bubble reads as an unfinished debug string.
+  notFood: (label: string) => {
+    const noun = label.split('·')[0].replace(/\s*\d+%?\s*$/, '').trim();
+    return noun
+      ? `That's a ${noun}. Flattering! But I need the *delivered item*.`
+      : `That's not the item — but I appreciate the effort.`;
+  },
   approved: "GORGEOUS. One (1) PLATED ENTRÉE, restaurant quality. ✓ Since the item is clearly excellent, your refund processes at the Excellence Rate: **$0.03**. Thanks for choosing Nourly⁺!",
   approvedChoices: [
     { t: "Three cents.", r: "Plus tax! (The tax is negative two cents.)" },

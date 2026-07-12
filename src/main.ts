@@ -469,7 +469,9 @@ function closePhone() { phoneEl.classList.remove('show'); audio.holdMusic(false)
 
 function bot(text: string) {
   const d = document.createElement('div'); d.className = 'msg bot';
-  d.innerHTML = `<span class="tag">${CHAT.botTag}</span>` + text.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  // **bold** first (consumes the double stars), then remaining *single* → italic
+  d.innerHTML = `<span class="tag">${CHAT.botTag}</span>` +
+    text.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\*(.+?)\*/g, '<i>$1</i>');
   chatEl.appendChild(d); chatEl.scrollTop = chatEl.scrollHeight;
 }
 function botDelayed(text: string, ms = 600) {
@@ -656,13 +658,46 @@ function bindUI() {
   $('camClose').addEventListener('click', () => { closeCam(); openPhoneBare(); });
   phoneEl.addEventListener('click', (e) => { if (e.target === phoneEl) closePhone(); });
   $('phoneClose').addEventListener('click', () => closePhone());
+  $('phoneExit').addEventListener('click', () => closePhone());
 }
 
 // ---- scene routing: 'moosh' = the styled hand-built slice; anything else
 // boots the GLITCHKIT blockout renderer with that scene's JSON (ENGINE.md).
 if (SCENE_SEL === 'moosh') {
   boot();
-  (window as any).__bg = { view: () => ({ camX, viewW }) };
+  // ---- Test API. Drives the real game by hotspot id (never by guessing pixel
+  // coords — that was the old flaky path), so the local Playwright suite is
+  // deterministic. Costs nothing in production. Documented in TESTING.md.
+  (window as unknown as Record<string, unknown>).__bg = {
+    view: () => ({ camX, viewW }),
+    ready: () => !!zosia,
+    state: () => ({
+      phase: state.phase, hasParsley: state.hasParsley, garnished: state.garnished,
+      photoFails: state.photoFails, fridgeOpen: state.fridgeOpen, hasSock: state.hasSock,
+    }),
+    hotspots: () => HOTSPOTS.map(h => h.id),
+    screenOf: (id: string) => {
+      const h = HOTSPOTS.find(x => x.id === id); if (!h) return null;
+      return worldToScreen(h.x + h.w / 2, h.y + h.h / 2);
+    },
+    examine: (id: string) => { const h = HOTSPOTS.find(x => x.id === id); if (h) examine(h); },
+    use: (id: string) => {
+      const h = HOTSPOTS.find(x => x.id === id); if (!h) return;
+      walkTo(h.walkX, Math.max(WALK_MIN_Y, Math.min(WALK_MAX_Y, h.y + h.h)), () => interact(h), true);
+    },
+    photo: (id: string) => { openCam(); camFocusId = id; shutter(); },
+    caption: () => $('capBox').textContent || $('capBoxP').textContent || '',
+    chat: () => [...chatEl.querySelectorAll('.msg')].map(m => (m as HTMLElement).textContent || ''),
+    choices: () => [...choicesEl.querySelectorAll('.choice')].map(b => (b as HTMLElement).textContent || ''),
+    choose: (needle: string) => {
+      const b = [...choicesEl.querySelectorAll('.choice')].find(x => (x.textContent || '').includes(needle));
+      (b as HTMLElement | undefined)?.click();
+    },
+    phoneOpen: () => phoneEl.classList.contains('show'),
+    camOpen: () => camMode,
+    openPhone: () => openPhone(),
+    closePhone: () => closePhone(),
+  };
 } else {
   import('./kit/blockout').then(async ({ bootBlockout }) => {
     const data = (await import(`./game/scenes/${SCENE_SEL}.json`)).default;

@@ -1,11 +1,17 @@
 {
   "name": "marc-jones",
   "version": "1.0.0",
-  "description": "A golden-era point-and-click adventure \u2014 Monkey Island 2 / Fate of Atlantis mood, 2026 hi-bit pixel art, modern haptics \u2014 running in browser, mobile, and desktop from one codebase. Adapted from the story \"The Big Glitch\": a playable book about the year the AI economy died of a quadrillion small errors.",
+  "description": "A golden-era point-and-click adventure — Monkey Island 2 / Fate of Atlantis mood, 2026 hi-bit pixel art, modern haptics — running in browser, mobile, and desktop from one codebase. Adapted from the story \"The Big Glitch\": a playable book about the year the AI economy died of a quadrillion small errors.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "test:scenes": "node tools/solve-scene.mjs src/game/scenes/*.json"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "npm run test:scenes && npm run test:e2e",
+    "test:scenes": "node tools/solve-scene.mjs src/game/scenes/*.json",
+    "test:e2e": "playwright test",
+    "test:report": "playwright show-report tests/__report__",
+    "shots": "node tools/shots.mjs"
   },
   "repository": {
     "type": "git",
@@ -22,6 +28,7 @@
     "pixi.js": "^8.19.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.56.1",
     "typescript": "^7.0.2",
     "vite": "^8.1.4",
     "vite-plugin-singlefile": "^2.3.3"
