@@ -12,7 +12,7 @@ import {
 const THEME = (new URLSearchParams(location.search).get('theme') || 'a').toLowerCase();
 applyTheme(THEME);
 const SCENE_SEL = (new URLSearchParams(location.search).get('scene') || localStorage.getItem('bg-scene') || 'moosh').toLowerCase();
-import { HOTSPOTS, PARSLEY, CUES, CHAT, END_LINE, DEPTH, HotspotDef } from './game/content';
+import { HOTSPOTS, PARSLEY, CUES, CHAT, END_LINE, MONTAGE, DEPTH, HotspotDef } from './game/content';
 
 // ----------------------------------------------------------------- helpers
 const $ = (id: string) => document.getElementById(id)!;
@@ -114,7 +114,7 @@ async function boot() {
   rainG = new Graphics(); world.addChild(rainG);
   motesG = new Graphics(); world.addChild(motesG);
 
-  plantSpr = new Sprite(tex(drawPlant(true))); plantSpr.position.set(294, 112); world.addChild(plantSpr);
+  plantSpr = new Sprite(tex(drawPlant(true))); plantSpr.position.set(503, 78); world.addChild(plantSpr);
   fridgeOverlay = new Sprite(tex(drawFridgeOpen())); fridgeOverlay.position.set(146, 46); fridgeOverlay.visible = false; world.addChild(fridgeOverlay);
   sockSpr = new Sprite(tex(drawSock())); sockSpr.position.set(94, 164); world.addChild(sockSpr);
   mooshSpr = new Sprite(tex(drawMoosh(false))); mooshSpr.anchor.set(0.5, 1); mooshSpr.position.set(352, 144); world.addChild(mooshSpr);
@@ -545,11 +545,6 @@ function shutter() {
   const id = camFocusId;
   closeCam();
   openPhoneBare();
-  if (id === 'plant') {
-    // THE EXPLOIT: the AI can't recognize the real meal but is 91% sure the
-    // plastic plant is food. Photograph its mistake and it refunds you for it.
-    return approve('glitch');
-  }
   if (id === 'moosh') {
     if (state.garnished) return approve();
     state.photoFails++;
@@ -574,11 +569,11 @@ function shutter() {
 function openPhoneBare() { phoneEl.classList.add('show'); audio.holdMusic(true); }
 
 // ----------------------------------------------------------- refund + endgame
-function approve(mode?: 'glitch') {
+function approve() {
   state.phase = 'approved';
   audio.sfx('refund'); haptics.play('success');
-  me(mode === 'glitch' ? '[photo of one (1) decorative plastic plant]' : '[photo of one (1) plated entrée]');
-  botDelayed(mode === 'glitch' ? CHAT.approvedByGlitch : CHAT.approved, 900);
+  me('[photo of one (1) plated entrée, garnished]');
+  botDelayed(CHAT.approved, 900);
   setChoices(CHAT.approvedChoices.map(c => ({
     label: c.t,
     fn: () => { me(c.t); if (c.r) botDelayed(c.r); else settings(); },
@@ -626,13 +621,76 @@ function terminate() {
   state.phase = 'done';
   haptics.play('terminate'); audio.sfx('terminate');
   closePhone();
-  const end = $('endPage');
-  end.style.display = 'flex';
-  const big = $('counterBig'); big.textContent = '0';
-  window.setTimeout(() => { big.textContent = '1'; haptics.play('impact'); }, 900);
-  window.setTimeout(() => {
-    $('endLine').innerHTML = `<i>“${CUES.terminate.text}”</i><br/><br/>` + END_LINE;
-  }, 1800);
+  $('endPage').style.display = 'flex';
+  runEndSequence();
+}
+
+// ---- End sequence: Zosia's press is #1, then the counter climbs through the
+// montage (Beats 2–5) and lands on 555,789 — the handoff to the next scene.
+const fmt = (n: number) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+let endTimers: number[] = [];
+const endLater = (fn: () => void, ms: number) => { endTimers.push(window.setTimeout(fn, ms)); };
+function tweenCounter(from: number, to: number, ms: number, done?: () => void) {
+  const big = $('counterBig'); const start = performance.now();
+  const step = () => {
+    if (state.phase !== 'done') return;               // bail if the page reset
+    const p = Math.min(1, (performance.now() - start) / ms);
+    const e = 1 - Math.pow(1 - p, 3);                 // easeOutCubic — a slot-machine settle
+    big.textContent = fmt(from + (to - from) * e);
+    if (p < 1) requestAnimationFrame(step);
+    else { big.textContent = fmt(to); done?.(); }
+  };
+  requestAnimationFrame(step);
+}
+function runEndSequence() {
+  const label = $('endLabel'), big = $('counterBig'), title = $('endTitle'), line = $('endLine');
+  label.textContent = 'ACCOUNTS TERMINATED TONIGHT';
+  big.textContent = '0';
+  title.textContent = ''; title.classList.remove('show');
+  line.innerHTML = ''; line.classList.remove('show');
+  $('endButtons').classList.remove('show');
+  $('endSkip').classList.remove('show');
+
+  // Beat 1: Zosia. The first press.
+  endLater(() => { big.textContent = '1'; haptics.play('impact'); audio.sfx('page'); }, 800);
+  endLater(() => {
+    line.innerHTML = `<i>“${CUES.terminate.text}”</i><br/><br/>${MONTAGE.intro}`;
+    line.classList.add('show');
+  }, 1700);
+  endLater(() => $('endSkip').classList.add('show'), 3000);
+
+  // Beats 2–5: the night doesn't stop. The counter climbs, the book turns.
+  let cursor = 6000, prev = 1;
+  for (const b of MONTAGE.beats) {
+    const from = prev, to = b.at, at = cursor;
+    endLater(() => line.classList.remove('show'), at - 400);
+    endLater(() => {
+      label.textContent = b.time;
+      title.textContent = b.title.toUpperCase(); title.classList.add('show');
+      line.innerHTML = b.line; line.classList.add('show');
+      haptics.play('tick'); audio.sfx('blip');
+      tweenCounter(from, to, 2200);
+    }, at);
+    prev = b.at; cursor += 3400;
+  }
+  // Landing: 555,789. Stops. 03:03.
+  endLater(() => { line.classList.remove('show'); title.classList.remove('show'); }, cursor - 400);
+  endLater(() => landEnd(prev), cursor);
+}
+function landEnd(from: number) {
+  $('endLabel').textContent = MONTAGE.land.time;
+  $('endTitle').classList.remove('show');
+  tweenCounter(from, MONTAGE.land.at, 2000, () => haptics.play('terminate'));
+  endLater(() => { $('endLine').innerHTML = MONTAGE.land.line; $('endLine').classList.add('show'); }, 1500);
+  endLater(() => { $('endButtons').classList.add('show'); $('endSkip').classList.remove('show'); }, 2800);
+}
+function skipEnd() {
+  endTimers.forEach(clearTimeout); endTimers = [];
+  $('endLabel').textContent = MONTAGE.land.time;
+  $('endTitle').textContent = ''; $('endTitle').classList.remove('show');
+  $('counterBig').textContent = fmt(MONTAGE.land.at);
+  $('endLine').innerHTML = MONTAGE.land.line; $('endLine').classList.add('show');
+  $('endButtons').classList.add('show'); $('endSkip').classList.remove('show');
 }
 
 // ---------------------------------------------------------------------- UI
@@ -653,6 +711,7 @@ function bindUI() {
     window.setTimeout(() => cue(CUES.entry), 700);
   });
   $('btnAgain').addEventListener('click', () => location.reload());
+  $('endSkip').addEventListener('click', skipEnd);
   $('btnReveal').addEventListener('click', () => { lastInput = performance.now(); showReveal(); });
   $('btnPhone').addEventListener('click', () => {
     lastInput = performance.now();

@@ -45,24 +45,40 @@ function bg<T>(page: Page, fn: (b: BG) => T): Promise<T> {
   return page.evaluate(`(${fn.toString()})(window.__bg)`) as Promise<T>;
 }
 
-test.describe('the parsley exploit (photograph the AI\'s mistake)', () => {
-  test('snapping the plastic parsley wins by exploiting the misclassification', async ({ page }) => {
+test.describe('the garnish exploit (fool the classifier with plastic parsley)', () => {
+  test('garnish the moosh, photograph it, and the mistake approves the refund', async ({ page }) => {
+    await boot(page);
+    await bg(page, b => b.use('plant'));                 // collect the immortal parsley from the sill
+    expect(await bg(page, b => b.state().hasParsley)).toBe(true);
+    await bg(page, b => b.use('moosh'));                 // put it on top of the moosh
+    expect(await bg(page, b => b.state().garnished)).toBe(true);
+
+    await bg(page, b => b.openPhone());
+    await bg(page, b => b.choose('I want a refund'));
+    await bg(page, b => b.choose('Open drone-cam'));
+    await bg(page, b => b.photo('moosh'));               // a plastic sprig → "restaurant quality" → refund
+    await page.waitForTimeout(1200);                     // GRAVY "is typing…" then approves
+
+    expect(await bg(page, b => b.state().phase), 'the garnish should approve the refund').toBe('approved');
+    const gravy = (await bg(page, b => b.chat())).filter(t => /GRAVY/.test(t)).join('  ');
+    expect(gravy, 'the joke — a plastic sprig upgrades the plate — must land').toContain('PLATED ENTRÉE');
+    expect(gravy, 'a raw NN% classifier score must never leak into a chat bubble').not.toMatch(/\d%/);
+  });
+
+  test('photographing the moosh WITHOUT the garnish is refused', async ({ page }) => {
     await boot(page);
     await bg(page, b => b.openPhone());
     await bg(page, b => b.choose('I want a refund'));
     await bg(page, b => b.choose('Open drone-cam'));
-    await bg(page, b => b.photo('plant')); // plastic parsley → AI is 91% sure it's food → refund
-    await page.waitForTimeout(1200);        // GRAVY "is typing…" then approves
-
-    expect(await bg(page, b => b.state().phase), 'the mistake should approve the refund').toBe('approved');
-    const gravy = (await bg(page, b => b.chat())).filter(t => /GRAVY/.test(t)).join('  ');
-    expect(gravy, 'the joke — drone reads the plastic parsley as salad — must land').toContain('SALAD (undressed)');
-    expect(gravy, 'a raw NN% classifier score must never leak into a chat bubble').not.toMatch(/\d%/);
+    await bg(page, b => b.photo('moosh'));               // bare moosh → UNRECOGNIZED → no refund
+    await page.waitForTimeout(1000);
+    expect(await bg(page, b => b.state().phase), 'no garnish, no approval').toBe('wantPhoto');
+    expect(await bg(page, b => b.state().photoFails)).toBeGreaterThan(0);
   });
 
   // Generalises the bug: no classifier verdict, for any photographed prop,
   // may carry a percentage into conversation.
-  for (const id of ['window', 'mug', 'fridge']) {
+  for (const id of ['window', 'mug', 'fridge', 'plant']) {
     test(`photographing "${id}" leaks no score into chat`, async ({ page }) => {
       await boot(page);
       await bg(page, b => b.openPhone());

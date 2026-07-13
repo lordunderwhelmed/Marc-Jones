@@ -32,9 +32,9 @@ export const HOTSPOTS: HotspotDef[] = [
   { id: 'sink', label: 'smart tap', x: 106, y: 90, w: 40, h: 30, walkX: 128,
     examine: "The smart tap has three settings: filtered, sparkling, and legal disclaimer.",
     camLabel: 'HYDRATION STATION 97%' },
-  { id: 'plant', label: 'plastic parsley', x: 294, y: 112, w: 34, h: 34, walkX: 304,
-    examine: "A little pot of plastic parsley, right there on the table. Immortal — the only thing in this kitchen that can't be recalled. Or, it turns out, correctly identified.",
-    examine2: "It's plastic. The drone's camera is ninety-one percent sure it's a fresh salad. The camera has never been more confident, or more wrong.",
+  { id: 'plant', label: 'plastic parsley', x: 503, y: 78, w: 36, h: 34, walkX: 476,
+    examine: "A pot of plastic parsley on the windowsill. Immortal — the only green thing in this kitchen that never wilts, on account of never having been alive.",
+    examine2: "It's plastic. The drone's camera is ninety-one percent sure it's a fresh salad. The camera has never been more confident, or more wrong. …Useful, that.",
     camLabel: 'SALAD (undressed) 91%' },
   { id: 'moosh', label: 'the moosh', x: 330, y: 118, w: 44, h: 26, walkX: 330,
     examine: "It looks like a mix of the Gremlins and water. It cost $14.90, plus service, delivery, convenience, and inconvenience fees.",
@@ -136,10 +136,10 @@ export const CHAT = {
       ? `That's a ${noun}. Flattering! But I need the *delivered item*.`
       : `That's not the item — but I appreciate the effort.`;
   },
-  approved: "GORGEOUS. One (1) PLATED ENTRÉE, restaurant quality. ✓ Since the item is clearly excellent, your refund processes at the Excellence Rate: **$0.03**. Thanks for choosing Nourly⁺!",
-  // The parsley exploit: the classifier can't recognize the actual meal but is
-  // confidently, wrongly sure the plastic plant is food — so it refunds you for it.
-  approvedByGlitch: "SALAD (undressed). ✓ FOOD DETECTED — and I'm *ninety-one percent* sure, which for me is basically a wedding vow. Finally, a meal I recognize! Logging that plastic plant as your delivered item. Your refund processes at the Excellence Rate: **$0.03**. (For the record: I never did work out what the grey one was.)",
+  // The garnish exploit: the classifier still can't identify the moosh, but a
+  // single plastic sprig on top makes it *confidently* upgrade the whole plate
+  // to "restaurant quality." It refunds you for the mistake, not the meal.
+  approved: "OH — *now* I see it. One (1) PLATED ENTRÉE, restaurant quality. ✓ That garnish is ninety-nine percent fresh, which for me is basically a wedding vow. I still couldn't tell you what's *under* it — but the sprig photographs beautifully, and the camera never lies. (It just guesses. Loudly.) Since the item is clearly excellent, your refund processes at the Excellence Rate: **$0.03**.",
   approvedChoices: [
     { t: "Three cents.", r: "Plus tax! (The tax is negative two cents.)" },
     { t: "Account settings.", r: null },
@@ -159,3 +159,27 @@ export const CHAT = {
 };
 
 export const END_LINE = "Between 02:00 and 03:03 this morning, 555,789 people pressed that button. You were the first. Somebody noticed.";
+
+// -------- The Night of the Sheep: the handoff out of Beat 1 -----------------
+// Canon (story/INTRO.md, story/SCENES.md): the Moosh is the FIRST press of a
+// six-beat cold-open montage. Zosia's terminate does not stop the counter — it
+// starts it. The book turns to the next sleeper, the same sixty-three minutes,
+// one victim at a time, accelerating "like a pulse rising" toward 555,789 —
+// then smash-cuts to the one man watching it as a half-centimetre line in a
+// dashboard. This drives the end-of-scene transition to Beat 2, "The Mushroom."
+export const MONTAGE = {
+  intro: END_LINE,                          // "…You were the first. Somebody noticed."
+  beats: [
+    { at: 47, time: '02:19', title: 'The Mushroom',
+      line: "A forager wakes three hundred miles east, folded around a stomach cramp. His app is ninety-eight percent sure the chanterelle was fine. The poison line says his symptoms are trending normal." },
+    { at: 2_140, time: '02:31', title: 'The Ticket',
+      line: "A man is fined for the pattern of his jacket. So is the neighbour who complained. Neither of them owns the jacket." },
+    { at: 61_030, time: '02:48', title: 'The Date',
+      line: "Two strangers are flagged mid-sentence — a conversation about sourdough, ruled suggestive. They log off in the same second. The counter's first chord." },
+    { at: 402_884, time: '02:59', title: 'The Ghost',
+      line: "A man is informed he is thirty percent deceased. He looks up, straight into the kiosk's lens — straight at you — and presses the button." },
+  ],
+  land: { at: 555_789, time: '03:03',
+    line: "555,789. The counter stops. Somewhere, a dashboard draws a line half a centimetre down. Somebody is about to spend the rest of the book asking why." },
+  next: "The Night of the Sheep · Beat 2 · The Mushroom — 02:19",
+};
