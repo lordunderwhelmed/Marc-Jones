@@ -116,7 +116,7 @@ export function applyTheme(name: string) {
   Object.assign(GLOW, { lamp: 0xffb14a, lampA: 0.34, phone: 0x7adfff, phoneA: 0.6, neon: 0xff8a5e, neonA: 0.5, rain: 0xd8b080, mote: 0xffb14a }, t.glow);
 }
 
-const BAYER = [
+export const BAYER = [
   [0, 8, 2, 10],
   [12, 4, 14, 6],
   [3, 11, 1, 9],
@@ -130,7 +130,7 @@ const HALFTONE = [
   [12, 4, 11, 15],
 ];
 
-function dither(c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number,
+export function dither(c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number,
   c1: string, c2: string, horizontal = false) {
   c.fillStyle = c1; c.fillRect(x, y, w, h);
   c.fillStyle = c2;
@@ -140,12 +140,12 @@ function dither(c: CanvasRenderingContext2D, x: number, y: number, w: number, h:
     if (t * 16 > M[(y + j) & 3][(x + i) & 3] + 0.5) c.fillRect(x + i, y + j, 1, 1);
   }
 }
-function speckle(c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, col: string, density: number, seed = 7) {
+export function speckle(c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, col: string, density: number, seed = 7) {
   let s = seed; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
   c.fillStyle = col;
   for (let i = 0; i < w * h * density; i++) c.fillRect((x + rnd() * w) | 0, (y + rnd() * h) | 0, 1, 1);
 }
-function canvas(w: number, h: number): [HTMLCanvasElement, CanvasRenderingContext2D] {
+export function canvas(w: number, h: number): [HTMLCanvasElement, CanvasRenderingContext2D] {
   const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
   const cx = cv.getContext('2d')!; cx.imageSmoothingEnabled = false;
   return [cv, cx];

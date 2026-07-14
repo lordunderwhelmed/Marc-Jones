@@ -711,6 +711,12 @@ function bindUI() {
     window.setTimeout(() => cue(CUES.entry), 700);
   });
   $('btnAgain').addEventListener('click', () => location.reload());
+  // The Moosh (Beat 1) hands off to a REAL styled scene: pressing this boots
+  // the Mushroom. This is the two-scene through-line the montage only teased.
+  const btnNext = $('btnNext');
+  btnNext.style.display = '';
+  btnNext.textContent = '▸ play The Mushroom';
+  btnNext.addEventListener('click', () => { localStorage.setItem('bg-scene', 'mushroom'); location.reload(); });
   $('endSkip').addEventListener('click', skipEnd);
   $('btnReveal').addEventListener('click', () => { lastInput = performance.now(); showReveal(); });
   $('btnPhone').addEventListener('click', () => {
@@ -763,6 +769,15 @@ if (SCENE_SEL === 'moosh') {
     openPhone: () => openPhone(),
     closePhone: () => closePhone(),
   };
+} else if (SCENE_SEL === 'mushroom') {
+  // Beat 2 — styled to Moosh fidelity via the renderer-agnostic Interp.
+  Promise.all([
+    import('./kit/styled'),
+    import('./game/scenes/mushroom.json'),
+    import('./game/mushroom-pack'),
+  ]).then(([{ bootStyled }, scene, { mushroomPack }]) => {
+    bootStyled(scene.default as never, mushroomPack);
+  }).catch(() => { localStorage.removeItem('bg-scene'); location.reload(); });
 } else {
   import('./kit/blockout').then(async ({ bootBlockout }) => {
     const data = (await import(`./game/scenes/${SCENE_SEL}.json`)).default;
@@ -773,7 +788,7 @@ if (SCENE_SEL === 'moosh') {
 // scene picker on the start page (styled slice + blockout playtests)
 const SCENE_LIST: [string, string][] = [
   ['moosh', 'The Moosh · styled'],
-  ['mushroom', '▦ The Mushroom'],
+  ['mushroom', 'The Mushroom · styled'],
   ['ticket', '▦ The Ticket'],
   ['date', '▦ The Date'],
   ['ghost', '▦ The Ghost'],
